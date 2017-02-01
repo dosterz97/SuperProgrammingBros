@@ -1,32 +1,3 @@
-Animation.cpp
-Details
-Activity
-Animation.cpp
-Sharing Info
-J
-
-General Info
-Type
-Text
-Size
-2 KB (2,168 bytes)
-Storage used
-0 bytesOwned by someone else
-Location
-Super Programming Bros
-Owner
-Jack Allen
-Modified
-9:12 AM by Jack Allen
-Created
-9:12 AM
-Description
-Add a description
-Download permissions
-Viewers can download
-
-New Team Drive
-
 #include "stdafx.h"
 #include "Animation.h"
 #include <string>
