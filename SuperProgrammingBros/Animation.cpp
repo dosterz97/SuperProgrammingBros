@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Animation.h"
+#include "include\Animation.h"
 #include <string>
 #include <iostream>
 #include "SDL_image.h"
