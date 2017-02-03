@@ -18,7 +18,8 @@ StateManager::~StateManager()
 
 //handle the SDL events given by SDL_PollEvent
 //Precondition: SDL_Window* and SDL_Surface*
-void StateManager::handleEvents() {
+void StateManager::handleEvents() 
+{
 	bool exit = false;
 
 	Uint32 backgroundColor = SDL_MapRGB(screen->format, 0, 0, 0);
@@ -33,7 +34,8 @@ void StateManager::handleEvents() {
 			if (SDLEvent.type == SDL_QUIT)
 				exit = true;
 			if (SDLEvent.type == SDL_KEYDOWN) {
-				switch (SDLEvent.key.keysym.sym) {
+				switch (SDLEvent.key.keysym.sym) 
+				{
 				case SDLK_UP: 
 					cout << "hey hey" << endl;
 					break;
@@ -51,23 +53,70 @@ void StateManager::handleEvents() {
 
 //step all of the objects
 void StateManager::stepAll() {
-	for (int i = 0; i < this->objects.size(); i++) {
-		if (this->objects.at(i) != NULL) {
+	for (int i = 0; i < this->objects.size(); i++) 
+	{
+		if (this->objects.at(i) != NULL) 
+		{
 			this->objects.at(i)->step();
 		}
 	}
 	this->player.step();
+
+	//Step all objects
+	for (int i = 0; i < objects.size(); i++)
+	{
+		(this->objects.at(i)->step());
+	}
+
+
+	int count = objects.size();
+	//Check for collisions
+	for (int i = 0; i < count; i++) {
+		GameObject* a = this->objects.at(i);
+		for (int j = i + 1; j < count; j++) 
+		{
+			GameObject* b = this->objects.at(i);
+			//Check the team of each pair
+			//If the are the same team ask if they touch
+			if (a->getTeam() != 0 && b->getTeam() != 0 && (a->getTeam() != b->getTeam() || 
+				a->getTeam() == -1)) 
+			{
+				double x1 = a->getX(), x2 = b->getX(), y1 = a->getY(), y2 = a->getY(),
+					w1 = a->getWidth(), w2 = b->getWidth(), h1 = a->getHeight(), 
+					h2 = b->getHeight();
+				//this might work
+				if (x1 < x2 + w2 && x1 + w1 > x2 && 
+					y1 < y2 + h2 && y1 + h1 > y2) 
+				{
+					a->collision();
+					b->collision();
+				}
+			}
+		}
+	}
+
+	//Remove any objects set to die
+	for (int i = 0; i < count; i++) {
+		GameObject* o = this->objects.at(i);
+
+		if (o->toDie()) {
+			delete o;
+			this->objects.at(i) = NULL;
+		}
+	}
 }
 
 
 //load the map based on the given numbers
 //precondition: world (int), level (int)
-void StateManager::loadMap(int world, int level) {
+void StateManager::loadMap(int world, int level) 
+{
 	
 }
 
 
 //draw all objects who have changes
-void StateManager::draw() {
+void StateManager::draw() 
+{
 
 }
