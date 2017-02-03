@@ -25,13 +25,22 @@ public:
 	bool toDie();
 	void setTeam(int);
 	int getTeam();
+	void setHeight(double);
+	double getHeight();
+	void setWidth(double);
+	double getWidth();
 
-	void step();//move things one 'step' or frame
-	
+	//move things one 'step' or frame
+	void step();
+	//called when State Manager finds a collision between objects
+	void collision();
+	//move to the next animation given an animation
 	void nextAnimation(Animation);
 private: 
 	double x,y;//cordinate
+	double width, height;//size
 	double XVelocity, YVelocity;
+
 	int team;
 
 	bool dead = false;//will remove in state manager if true
