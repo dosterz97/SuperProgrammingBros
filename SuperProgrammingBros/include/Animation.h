@@ -5,7 +5,7 @@
 class Animation
 {
 public:
-	Animation(std::string, bool, SDL_Renderer*);
+	Animation(std::string, bool);
 	Animation();
 	~Animation();
 	SDL_Surface* getSurface();
@@ -13,12 +13,13 @@ public:
 	bool getStill();
 	void loadSurface(std::string);
 	std::string getName();
-	
+	void setFrame(int);
+
 private:
+	int frame;
 	std::string name;
 	bool isStill;
 	SDL_Renderer* renderer;
 	SDL_Surface* surface;
-	SDL_Texture* texture;
 	void createTexture();
 };

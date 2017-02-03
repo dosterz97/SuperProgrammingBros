@@ -7,28 +7,25 @@
 using namespace std;
 //create a new animation
 //precondition: string of the animation name, bool if the animation is still
-Animation::Animation(std::string name, bool isStill, SDL_Renderer* renderer)
+Animation::Animation(std::string name, bool isStill)
 {
 	this->isStill = isStill;
 	this->name = name;
-	this->renderer = renderer;
-
+	this->frame = 1;
 	if (isStill)
-	{
 		loadSurface(name);
-	}
-	createTexture();
 }
 
-
 //default constructor
+//postcondition: a new animation object
 Animation::Animation()
 {
-	Animation("sasser", true, renderer);
+	Animation("mario", true);
 }
 
 Animation::~Animation()
 {
+
 }
 
 
@@ -36,6 +33,12 @@ Animation::~Animation()
 //precondition: image name
 void Animation::loadSurface(std::string path)
 {
+	//create string of frame to modify path
+	string frameStr = to_string(frame);
+
+	//modify the string so it pulls an image from the "images" file
+	path = "images\\" + path + "-"+ frameStr +".png";
+
 	//The final optimized image
 	SDL_Surface* optimizedSurface = NULL;
 
@@ -88,17 +91,19 @@ void Animation::setStill(bool isStill)
 	this->isStill = isStill;
 }
 
-//create the texture (called in the constructor)
-//precondition: surface to make from
-void Animation::createTexture()
-{
-	texture = SDL_CreateTextureFromSurface(renderer, surface);
-}
-
-
 //return the image name of the animation
 //postcondition: string of the name
 std::string Animation::getName()
 {
 	return name;
+}
+
+//change the frame of the image
+//precondition: the frame to change
+void Animation::setFrame(int frame)
+{
+	this->frame = frame;
+	loadSurface(name);
+
+	return;
 }
