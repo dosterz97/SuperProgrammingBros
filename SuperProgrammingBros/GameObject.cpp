@@ -209,7 +209,7 @@ double GameObject::getWidth()
 
 
 //do the collision logic for the object
-void collision()
+void GameObject::collision()
 {
 
 }
