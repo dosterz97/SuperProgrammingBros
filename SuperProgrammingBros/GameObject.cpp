@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "include\GameObject.h"
-
+#include "include\Animation.h"
 
 //Default GameObject constuctor
 GameObject::GameObject() {

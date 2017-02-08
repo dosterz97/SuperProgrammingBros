@@ -25,8 +25,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-
-
 	StateManager* sm = new StateManager(window, screen);
 
 	sm->handleEvents();
