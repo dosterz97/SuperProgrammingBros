@@ -37,16 +37,11 @@ void StateManager::handleEvents()
 			if (SDLEvent.type == SDL_QUIT)
 				exit = true;
 			if (SDLEvent.type == SDL_KEYDOWN) {
-<<<<<<< HEAD
-				switch (SDLEvent.key.keysym.sym) {
-				case SDLK_UP:
-					cout << "you're fired" << endl;
-=======
+
 				switch (SDLEvent.key.keysym.sym) 
 				{
 				case SDLK_UP: 
 					cout << "hey hey" << endl;
->>>>>>> master
 					break;
 				}
 			}
