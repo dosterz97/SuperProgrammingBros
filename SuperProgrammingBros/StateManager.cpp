@@ -22,8 +22,16 @@ void StateManager::handleEvents()
 {
 	bool exit = false;
 
+	double t = 0.0;
+	double dt = 0.01;
+
+	double currentTime = 0;
+	double accumulator = 0.0;
+
+
 	Uint32 backgroundColor = SDL_MapRGB(screen->format, 0, 0, 0);
 	Animation myAnimation("mario-small", true);
+	player.setAnimation(myAnimation);
 	int frame = 0;
 	int animation = 1;
 
@@ -37,25 +45,70 @@ void StateManager::handleEvents()
 			if (SDLEvent.type == SDL_QUIT)
 				exit = true;
 			if (SDLEvent.type == SDL_KEYDOWN) {
-
-				switch (SDLEvent.key.keysym.sym) 
+				switch (SDLEvent.key.keysym.sym)
 				{
-				case SDLK_UP: 
-					cout << "hey hey" << endl;
+				case SDLK_UP:
+					cout << "hey up" << endl;
+					player.setVY(-2);
+					cout << player.getVY() << endl;
+					break;
+				case SDLK_RIGHT:
+					cout << "hey right" << endl;
+					player.setVX(2);
+					cout << player.getVX() << endl;
+					break;
+				case SDLK_DOWN:
+					cout << "hey down" << endl;
+					player.setVY(2);
+					cout << player.getVY() << endl;
+					break;
+				case SDLK_LEFT:
+					cout << "hey left" << endl;
+					player.setVX(-2);
+					cout << player.getVX() << endl;
 					break;
 				}
 			}
-
+			else if (SDLEvent.type == SDL_KEYUP) {
+				switch (SDLEvent.key.keysym.sym)
+				{
+				case SDLK_UP:
+					cout << "hey up 2" << endl;
+					player.setVY(0);
+					cout << player.getVY() << endl;
+					break;
+				case SDLK_RIGHT:
+					cout << "hey right 2" << endl;
+					player.setVX(0);
+					cout << player.getVX() << endl;
+					break;
+				case SDLK_DOWN:
+					cout << "hey down 2" << endl;
+					player.setVY(0);
+					cout << player.getVY() << endl;
+					break;
+				case SDLK_LEFT:
+					cout << "hey left 2" << endl;
+					player.setVX(0);
+					cout << player.getVX() << endl;
+					break;
+				}
+			}
 		}
 
-		if (frame % 350 == 0) {
+		if (frame % 200 == 0) {
 			myAnimation.setFrame(animation++);
 		}
 		if (animation == 4)
 			animation = 1;
+
+		//Do the stuffs
+		stepAll();
+
 		SDL_FillRect(this->screen, NULL, backgroundColor);//Fill the background color
-		SDL_BlitSurface(myAnimation.getSurface(), NULL, screen, &myAnimation.getRect());
+		SDL_BlitSurface(myAnimation.getSurface(), NULL, screen, &player.getAnimation().getRect());
 		SDL_UpdateWindowSurface(this->window);//Update Window
+
 		frame++;
 	}
 }

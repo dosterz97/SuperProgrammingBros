@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "include\GameObject.h"
+#include <iostream>
 
+using namespace std;
 
 //Default GameObject constuctor
 GameObject::GameObject() {
@@ -44,6 +46,9 @@ GameObject::~GameObject()
 void GameObject::setX(double x) 
 {
 	this->x = x;
+	SDL_Rect newRect = this->animation.getRect();
+	newRect.x = this->x;
+	this->animation.setRect(newRect);
 }
 
 
@@ -60,6 +65,9 @@ double GameObject::getX()
 void GameObject::setY(double y) 
 {
 	this->y = y;
+	SDL_Rect newRect = this->animation.getRect();
+	newRect.y = this->y;
+	this->animation.setRect(newRect);
 }
 
 
@@ -144,9 +152,6 @@ void GameObject::step()
 
 	//go to next animation
 	this->nextAnimation(this->getAnimation());
-
-	//check collisions
-
 }
 
 

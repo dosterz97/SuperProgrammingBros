@@ -118,3 +118,11 @@ SDL_Rect Animation::getRect()
 {
 	return stretchRect;
 }
+
+
+//sets the rect of the animation
+//pre conditon: SDL_Rect
+void Animation::setRect(SDL_Rect stretchRect)
+{
+	this->stretchRect = stretchRect;
+}

@@ -15,6 +15,7 @@ public:
 	std::string getName();
 	void setFrame(int);
 	SDL_Rect getRect();
+	void setRect(SDL_Rect);
 
 private:
 	int frame;
