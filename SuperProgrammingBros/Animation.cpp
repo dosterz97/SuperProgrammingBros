@@ -14,6 +14,10 @@ Animation::Animation(std::string name, bool isStill)
 	this->frame = 1;
 	if (isStill)
 		loadSurface(name);
+	stretchRect.x = 10;
+	stretchRect.y = 10;
+	stretchRect.w = 200;
+	stretchRect.h = 400;
 }
 
 //default constructor
@@ -106,4 +110,11 @@ void Animation::setFrame(int frame)
 	loadSurface(name);
 
 	return;
+}
+
+//get the stretched rect
+//postcondition: a stretched rect
+SDL_Rect Animation::getRect()
+{
+	return stretchRect;
 }
