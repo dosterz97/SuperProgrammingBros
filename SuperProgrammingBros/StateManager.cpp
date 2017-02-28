@@ -23,6 +23,9 @@ void StateManager::handleEvents()
 	bool exit = false;
 
 	Uint32 backgroundColor = SDL_MapRGB(screen->format, 0, 0, 0);
+	Animation myAnimation("mario-small", true);
+	int frame = 0;
+	int animation = 1;
 
 	SDL_Event SDLEvent;
 	//Game Loop
@@ -34,19 +37,31 @@ void StateManager::handleEvents()
 			if (SDLEvent.type == SDL_QUIT)
 				exit = true;
 			if (SDLEvent.type == SDL_KEYDOWN) {
+<<<<<<< HEAD
+				switch (SDLEvent.key.keysym.sym) {
+				case SDLK_UP:
+					cout << "you're fired" << endl;
+=======
 				switch (SDLEvent.key.keysym.sym) 
 				{
 				case SDLK_UP: 
 					cout << "hey hey" << endl;
+>>>>>>> master
 					break;
 				}
 			}
 
 		}
 
+		if (frame % 350 == 0) {
+			myAnimation.setFrame(animation++);
+		}
+		if (animation == 4)
+			animation = 1;
 		SDL_FillRect(this->screen, NULL, backgroundColor);//Fill the background color
-
+		SDL_BlitSurface(myAnimation.getSurface(), NULL, screen, &myAnimation.getRect());
 		SDL_UpdateWindowSurface(this->window);//Update Window
+		frame++;
 	}
 }
 
