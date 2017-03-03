@@ -42,6 +42,7 @@ void Animation::loadSurface(std::string path)
 
 	//modify the string so it pulls an image from the "images" file
 	path = "images\\" + path + "-"+ frameStr +".png";
+	cout << path << endl;
 
 	//The final optimized image
 	SDL_Surface* optimizedSurface = NULL;

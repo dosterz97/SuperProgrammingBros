@@ -14,6 +14,7 @@ GameObject::GameObject() {
 GameObject::GameObject(GameObject object, Animation animation)
 {
 	this->setAnimation(animation);
+	cout << animation.getName() << endl;
 	this->setX(object.getX());
 	this->setY(object.getY());
 	this->setVX(object.getVX());
@@ -31,7 +32,7 @@ GameObject::GameObject(double x, double y, Animation animation)
 	this->animation = animation;
 	this->setVX(0);
 	this->setVY(0);
-	this->setTeam(0);
+	this->setTeam(1);
 	this->setToDie(false);
 }
 
@@ -144,11 +145,21 @@ bool GameObject::toDie()
 
 
 //do on frame of logic for the object
-void GameObject::step() 
+void GameObject::step()
 {
+	//apply gravity  
+	if (team != 0 && this->YVelocity <= 18) {
+		this->YVelocity += 6;
+	}
+
 	//apply velocity
-	this->setX(this->getX() + this->getVX());
-	this->setY(this->getY() + this->getVY());
+	this->setX(x + XVelocity);
+	if (YVelocity > 18) {
+		YVelocity = 18;
+	}
+	if (y < 500 || YVelocity < 0) {
+		this->setY(y + YVelocity);
+	}
 
 	//go to next animation
 	this->nextAnimation(this->getAnimation());
