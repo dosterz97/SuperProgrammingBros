@@ -24,7 +24,7 @@ Animation::Animation(std::string name, bool isStill)
 //postcondition: a new animation object
 Animation::Animation()
 {
-	Animation("mario", true);
+	Animation("default", true);
 }
 
 Animation::~Animation()
@@ -42,7 +42,7 @@ void Animation::loadSurface(std::string path)
 
 	//modify the string so it pulls an image from the "images" file
 	path = "images\\" + path + "-"+ frameStr +".png";
-	cout << path << endl;
+	//cout << path << endl;
 
 	//The final optimized image
 	SDL_Surface* optimizedSurface = NULL;
@@ -51,7 +51,7 @@ void Animation::loadSurface(std::string path)
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == NULL)
 	{
-		cout << "Unable to load image %s! SDL Error: %s\n" << path.c_str() << SDL_GetError();
+		cout << "Unable to load image %s! SDL Error: %s\n" << path.c_str() << SDL_GetError() << endl;
 	}
 	else
 	{
@@ -59,8 +59,8 @@ void Animation::loadSurface(std::string path)
 		optimizedSurface = SDL_ConvertSurface(loadedSurface, loadedSurface->format, NULL);
 		if (optimizedSurface == NULL)
 		{
-			cout<< "Unable to optimize image %s! SDL Error: %s\n" <<
-				path.c_str() << SDL_GetError();
+			cout << "Unable to optimize image %s! SDL Error: %s\n" <<
+				path.c_str() << SDL_GetError() << endl;
 		}
 
 		//Get rid of old loaded surface

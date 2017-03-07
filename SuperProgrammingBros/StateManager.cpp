@@ -31,19 +31,20 @@ void StateManager::handleEvents()
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
 	
-
 	Uint32 backgroundColor = SDL_MapRGB(screen->format, 0, 0, 0);
-	Animation myAnimation("mario-small", true);
-	player.setAnimation(myAnimation);
-	player.setTeam(1);
+	Animation myAnimation("koopa", true);
+	player = new GameObject(10, 10, myAnimation);
+	player->setTeam(1);
 	int animation = 1;
-	Animation myAnimation2("goomba", true);
-
-	GameObject* t = new GameObject(player, myAnimation2);
-	t->setX(200);
-	t->setAnimation(myAnimation2);
-	objects.push_back(t);
 	SDL_Event SDLEvent;
+	Animation platformA("mario-small",true);
+	GameObject* platform = new GameObject(400,200, platformA);
+	platform->setTeam(0);
+	platform->setVX(0);
+	platform->setVY(0);
+	objects.push_back(player);
+	objects.push_back(platform);
+
 	//Game Loop
 	while (!exit)
 	{
@@ -64,23 +65,15 @@ void StateManager::handleEvents()
 					switch (SDLEvent.key.keysym.sym)
 					{
 					case SDLK_UP:
-						cout << "hey up" << endl;
-						player.setVY(-30);
-						cout << player.getVY() << endl;
+						player->setVY(-30);
 						break;
 					case SDLK_RIGHT:
-						cout << "hey right" << endl;
-						player.setVX(5);
-						cout << player.getVX() << endl;
+						player->setVX(5);
 						break;
-					case SDLK_DOWN:
-						cout << "duck" << endl;
-						
+					case SDLK_DOWN:						
 						break;
 					case SDLK_LEFT:
-						cout << "hey left" << endl;
-						player.setVX(-5);
-						cout << player.getVX() << endl;
+						player->setVX(-5);
 						break;
 					}
 				}
@@ -88,28 +81,22 @@ void StateManager::handleEvents()
 					switch (SDLEvent.key.keysym.sym)
 					{
 					case SDLK_UP:
-						cout << "hey up 2" << endl;
 						break;
 					case SDLK_RIGHT:
-						cout << "hey right 2" << endl;
-						player.setVX(0);
-						cout << player.getVX() << endl;
+						player->setVX(0);
+						
 						break;
 					case SDLK_DOWN:
-						cout << "stand" << endl;
 						break;
 					case SDLK_LEFT:
-						cout << "hey left 2" << endl;
-						player.setVX(0);
-						cout << player.getVX() << endl;
+						player->setVX(0);
 						break;
 					}
 				}
 			}
 
-			if (frame % 5 == 0) {
+			if (frame % 5 == 0)
 				myAnimation.setFrame(animation++);
-			}
 			if (animation == 4)
 				animation = 1;
 
@@ -117,8 +104,11 @@ void StateManager::handleEvents()
 			stepAll();
 
 			SDL_FillRect(this->screen, NULL, backgroundColor);//Fill the background color
-			SDL_BlitSurface(myAnimation.getSurface(), NULL, screen, &objects.at(0)->getAnimation().getRect());
-			SDL_BlitSurface(myAnimation.getSurface(), NULL, screen, &player.getAnimation().getRect());
+			//Draw the stuffs
+			for (int i = 0; i < objects.size(); i++) {
+				SDL_BlitSurface(objects.at(i)->getAnimation().getSurface(), NULL, screen, &objects.at(i)->getAnimation().getRect());
+			}
+
 			SDL_UpdateWindowSurface(this->window);//Update Window
 
 			frame++;
@@ -137,7 +127,6 @@ void StateManager::stepAll() {
 		}
 	}
 	
-	this->player.step();
 
 	//Step all objects
 	for (int i = 0; i < objects.size(); i++)
@@ -147,21 +136,26 @@ void StateManager::stepAll() {
 
 
 	int count = objects.size();
+
 	//Check for collisions
 	for (int i = 0; i < count; i++) {
 		GameObject* a = this->objects.at(i);
 		for (int j = i + 1; j < count; j++) 
 		{
-			GameObject* b = this->objects.at(i);
+			GameObject* b = this->objects.at(j);
 			//Check the team of each pair
 			//If the are the same team ask if they touch
-			if (a->getTeam() != 0 && b->getTeam() != 0 && (a->getTeam() != b->getTeam() || 
-				a->getTeam() == -1)) 
+			if (a->getTeam() != -1 && b->getTeam() != -1 && (a->getTeam() != b->getTeam())) 
 			{
 				double x1 = a->getX(), x2 = b->getX(), y1 = a->getY(), y2 = a->getY(),
 					w1 = a->getWidth(), w2 = b->getWidth(), h1 = a->getHeight(), 
 					h2 = b->getHeight();
 				//this might work
+
+				cout << "x1 < x2 + w2 : " << x1 << "<" << x2 + w2 << endl;
+				cout << "&& x1 + w1 > x2 : " << x1 + w1 << ">" << x2 << endl;
+				cout << "&& y1 < y2 + h2 : " << y1 << "<" << y2 + h2 << endl;
+				cout << "&& y1 + h1 > y2 : " << y1 + h1 << ">" << y2 << endl;
 				if (x1 < x2 + w2 && x1 + w1 > x2 && 
 					y1 < y2 + h2 && y1 + h1 > y2) 
 				{

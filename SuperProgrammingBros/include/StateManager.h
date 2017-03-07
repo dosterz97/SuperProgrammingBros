@@ -21,7 +21,7 @@ private:
 	int level=1;
 	SDL_Window* window;
 	SDL_Surface* screen;
-	GameObject player;
+	GameObject* player;
 	vector<GameObject*> objects;
 };
 

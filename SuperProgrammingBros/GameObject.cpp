@@ -27,9 +27,9 @@ GameObject::GameObject(GameObject object, Animation animation)
 //Precondition: x position, y position, object animation
 GameObject::GameObject(double x, double y, Animation animation) 
 {
-	this->x = x;
-	this->y = y;
 	this->animation = animation;
+	this->setX(x);
+	this->setY(y);
 	this->setVX(0);
 	this->setVY(0);
 	this->setTeam(1);
@@ -147,22 +147,25 @@ bool GameObject::toDie()
 //do on frame of logic for the object
 void GameObject::step()
 {
-	//apply gravity  
-	if (team != 0 && this->YVelocity <= 18) {
-		this->YVelocity += 6;
-	}
+	if (this->team != 0) {
+		//apply gravity  
+		if ((team != 0 || team != -1) && this->YVelocity <= 18) {
+			this->YVelocity += 6;
+		}
 
-	//apply velocity
-	this->setX(x + XVelocity);
-	if (YVelocity > 18) {
-		YVelocity = 18;
-	}
-	if (y < 500 || YVelocity < 0) {
-		this->setY(y + YVelocity);
-	}
+		//apply velocity
+		this->setX(x + XVelocity);
+		//terminal velocity
+		if (YVelocity > 18) {
+			YVelocity = 18;
+		}
+		if (y < 500 || YVelocity < 0) {
+			this->setY(y + YVelocity);
+		}
 
-	//go to next animation
-	this->nextAnimation(this->getAnimation());
+		//go to next animation
+		this->nextAnimation(this->getAnimation());
+	}
 }
 
 
@@ -227,5 +230,5 @@ double GameObject::getWidth()
 //do the collision logic for the object
 void GameObject::collision()
 {
-
+	cout << "collision!!!!!!!!!!!!" << endl;
 }

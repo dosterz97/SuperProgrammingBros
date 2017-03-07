@@ -25,14 +25,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-
-
 	StateManager* sm = new StateManager(window, screen);
 
 	sm->handleEvents();
 	
 	return 0;
 }
+
 
 bool initialize()
 {
@@ -55,6 +54,7 @@ bool initialize()
 	screen = SDL_GetWindowSurface(window);
 	return true;
 }
+
 
 //Close up the window
 void close()
