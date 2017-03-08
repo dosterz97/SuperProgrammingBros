@@ -37,13 +37,16 @@ void StateManager::handleEvents()
 	player->setTeam(1);
 	int animation = 1;
 	SDL_Event SDLEvent;
-	Animation platformA("mario-small",true);
-	GameObject* platform = new GameObject(400,200, platformA);
+	Animation platformA("test",true);
+	GameObject* platform = new GameObject(400,190, platformA);
 	platform->setTeam(0);
 	platform->setVX(0);
 	platform->setVY(0);
 	objects.push_back(player);
 	objects.push_back(platform);
+
+	cout << platform->getWidth() << " , " << platform->getHeight() << endl;
+	cout << platform->getAnimation().getRect().w << " , " << platform->getAnimation().getRect().h << endl;
 
 	//Game Loop
 	while (!exit)
@@ -65,7 +68,11 @@ void StateManager::handleEvents()
 					switch (SDLEvent.key.keysym.sym)
 					{
 					case SDLK_UP:
-						player->setVY(-30);
+						//delete later, so i can fly and test
+						//if (player->isGrounded()) {
+							player->setGrounded(false);
+							player->setVY(-30);
+						//}
 						break;
 					case SDLK_RIGHT:
 						player->setVX(5);
@@ -106,9 +113,8 @@ void StateManager::handleEvents()
 			SDL_FillRect(this->screen, NULL, backgroundColor);//Fill the background color
 			//Draw the stuffs
 			for (int i = 0; i < objects.size(); i++) {
-				SDL_BlitSurface(objects.at(i)->getAnimation().getSurface(), NULL, screen, &objects.at(i)->getAnimation().getRect());
+				SDL_BlitScaled(objects.at(i)->getAnimation().getSurface(), NULL, screen, &objects.at(i)->getAnimation().getRect());
 			}
-
 			SDL_UpdateWindowSurface(this->window);//Update Window
 
 			frame++;
@@ -147,26 +153,26 @@ void StateManager::stepAll() {
 			//If the are the same team ask if they touch
 			if (a->getTeam() != -1 && b->getTeam() != -1 && (a->getTeam() != b->getTeam())) 
 			{
-				double x1 = a->getX(), x2 = b->getX(), y1 = a->getY(), y2 = a->getY(),
+				double x1 = a->getX(), x2 = b->getX(), y1 = a->getY(), y2 = b->getY(),
 					w1 = a->getWidth(), w2 = b->getWidth(), h1 = a->getHeight(), 
 					h2 = b->getHeight();
-				//this might work
 
-				cout << "x1 < x2 + w2 : " << x1 << "<" << x2 + w2 << endl;
-				cout << "&& x1 + w1 > x2 : " << x1 + w1 << ">" << x2 << endl;
-				cout << "&& y1 < y2 + h2 : " << y1 << "<" << y2 + h2 << endl;
-				cout << "&& y1 + h1 > y2 : " << y1 + h1 << ">" << y2 << endl;
+				/*cout << "x1 < x2 + w2 : " << x1 << "<" << x2 <<"+"<< w2 << endl;
+				cout << "&& x1 + w1 > x2 : " << x1 << "+" << w1 << ">" << x2 << endl;
+				cout << "&& y1 < y2 + h2 : " << y1 << "<" << y2 << "+" << h2 << endl;
+				cout << "&& y1 + h1 > y2 : " << y1 << "+" << h1 << ">" << y2 << endl;*/
 				if (x1 < x2 + w2 && x1 + w1 > x2 && 
 					y1 < y2 + h2 && y1 + h1 > y2) 
 				{
-					a->collision();
-					b->collision();
+					a->collision(b);
+					b->collision(a);
 				}
 			}
 		}
 	}
 
 	//Remove any objects set to die
+	//Set grounded to false so they wont float
 	for (int i = 0; i < count; i++) {
 		GameObject* o = this->objects.at(i);
 
@@ -174,6 +180,8 @@ void StateManager::stepAll() {
 			delete o;
 			this->objects.at(i) = NULL;
 		}
+
+		o->setGrounded(false);
 	}
 }
 

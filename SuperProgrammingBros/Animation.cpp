@@ -9,15 +9,18 @@ using namespace std;
 //precondition: string of the animation name, bool if the animation is still
 Animation::Animation(std::string name, bool isStill)
 {
+	stretchRect.x = 0;
+	stretchRect.y = 0;
+	stretchRect.w = 0;
+	stretchRect.h = 0;
 	this->isStill = isStill;
 	this->name = name;
 	this->frame = 1;
 	if (isStill)
 		loadSurface(name);
-	stretchRect.x = 10;
-	stretchRect.y = 10;
-	stretchRect.w = 200;
-	stretchRect.h = 400;
+
+	stretchRect.h *= 2;
+	stretchRect.w *= 2;
 }
 
 //default constructor
@@ -65,6 +68,9 @@ void Animation::loadSurface(std::string path)
 
 		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
+
+		this->stretchRect.h = optimizedSurface->h;
+		this->stretchRect.w = optimizedSurface->w;
 	}
 
 	this-> surface = optimizedSurface;

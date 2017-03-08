@@ -29,13 +29,26 @@ public:
 	double getHeight();
 	void setWidth(double);
 	double getWidth();
+	void setGrounded(bool);
+	bool isGrounded();
 
 	//move things one 'step' or frame
 	void step();
 	//called when State Manager finds a collision between objects
-	void collision();
+	void collision(GameObject*);
 	//move to the next animation given an animation
 	void nextAnimation(Animation);
+	//determines which side the collision occured on
+	void collisionSide(GameObject*);
+
+	//executes the specific logic for the side that has been determined by collisionSide
+	//the reason I have these functions is so that they can be overriden
+	//and different functionality can be made for different classes
+	void collideLeft(GameObject*);
+	void collideRight(GameObject*);
+	void collideTop(GameObject*);
+	void collideBottom(GameObject*);
+
 private: 
 	double x,y;//cordinate
 	double width, height;//size
@@ -44,6 +57,7 @@ private:
 	int team;
 
 	bool dead = false;//will remove in state manager if true
+	bool grounded = false;
 
 	Animation animation;//object animation
 };
