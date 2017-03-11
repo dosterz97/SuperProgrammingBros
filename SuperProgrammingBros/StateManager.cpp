@@ -33,12 +33,12 @@ void StateManager::handleEvents()
 	
 	Uint32 backgroundColor = SDL_MapRGB(screen->format, 0, 0, 0);
 	Animation myAnimation("koopa", true);
-	player = new GameObject(10, 10, myAnimation);
+	player = new GameObject(500, 10, myAnimation);
 	player->setTeam(1);
 	int animation = 1;
 	SDL_Event SDLEvent;
 	Animation platformA("test",true);
-	GameObject* platform = new GameObject(400,190, platformA);
+	GameObject* platform = new GameObject(-300,190, platformA);
 	platform->setTeam(0);
 	platform->setVX(0);
 	platform->setVY(0);

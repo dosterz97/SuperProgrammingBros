@@ -292,9 +292,9 @@ void GameObject::collisionSide(GameObject* o) {
 //left collision logic
 void GameObject::collideLeft(GameObject* o)
 {
-	int distance = this->getAnimation().getRect().x - o->getAnimation().getRect().x + o->getAnimation().getRect().w;
+	int distance = this->getAnimation().getRect().x - (o->getAnimation().getRect().x + o->getAnimation().getRect().w);
 	
-	this->setX(this->getX() + distance);
+	this->setX(this->getX() - distance);
 	this->setVX(0);
 }
 
