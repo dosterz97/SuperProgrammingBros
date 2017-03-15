@@ -30,16 +30,24 @@ Animation::~Animation()
 
 //load an optimized surface of an image
 //precondition: image name
-void Animation::loadSprite(std::string path)
+void Animation::loadSprite(std::string path, int x, int y, int w, int h)
 {
 	//create string of frame to modify path
 	string frameStr = to_string(frame);
 
+	
 	//modify the string so it pulls an image from the "images" file
 	path = "images\\" + path + "-"+ frameStr +".png";
-	cout << path << endl;
-	if (!texture.loadFromFile(path)){}
-	
+	if (path != oldpath) {
+		if (w == -1 || h == -1) {
+			if (!texture.loadFromFile(path)) {}
+		}
+		else
+		{
+			if (!texture.loadFromFile(path, sf::IntRect(x, y, w, h))) {}
+		}
+	}
+	oldpath = path;
 	sprite.setTexture(texture);
 	sprite.scale(2, 2);
 	return;

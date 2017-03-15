@@ -20,7 +20,7 @@ public:
 	void setVY(double);
 	double getVY();
 	void setAnimation(Animation animation);
-	Animation getAnimation();
+	Animation* getAnimation();
 	void setToDie(bool);
 	bool toDie();
 	void setTeam(int);
@@ -40,6 +40,9 @@ public:
 	void nextAnimation(Animation);
 	//determines which side the collision occured on
 	void collisionSide(GameObject*);
+
+	//set texture rect
+	void textureRect(int x = 0, int y = 0, int w = -1, int h = -1);
 	
 	//executes the specific logic for the side that has been determined by collisionSide
 	//the reason I have these functions is so that they can be overriden

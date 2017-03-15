@@ -15,11 +15,12 @@ public:
 	void setFrame(int);
 	sf::Texture* getTexture();
 	sf::Sprite* getSprite();
-	void loadSprite(std::string);
+	void loadSprite(std::string, int x = 0, int y = 0, int w = -1, int h = -1);
 
 private:
 	int frame;
 	std::string name;
+	std::string oldpath= "";
 	bool isStill;
 	sf::Sprite sprite;
 	sf::Texture texture;

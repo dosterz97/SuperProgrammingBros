@@ -23,5 +23,8 @@ private:
 	sf::RenderWindow* window;
 	GameObject* player;
 	vector<GameObject*> objects;
+
+	//the camera to follow the player
+	sf::View* view;
 };
 

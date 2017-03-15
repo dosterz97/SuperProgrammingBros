@@ -51,9 +51,7 @@ GameObject::~GameObject()
 //precondition: double x
 void GameObject::setX(double x) 
 {
-	double moveAmt = this->getAnimation().getSprite()->getGlobalBounds().left;
-	this->animation.getSprite()->move(- moveAmt ,0);
-	this->animation.getSprite()->move(x, 0);
+	animation.getSprite()->setPosition(x, animation.getSprite()->getGlobalBounds().top);
 	this->x = x;
 }
 
@@ -70,12 +68,8 @@ double GameObject::getX()
 //precondition: double y
 void GameObject::setY(double y) 
 {
-	double moveAmt = this->getAnimation().getSprite()->getGlobalBounds().top;
-	this->animation.getSprite()->move(0, - moveAmt);
-	this->animation.getSprite()->move(0,y);
-
+	animation.getSprite()->setPosition(animation.getSprite()->getGlobalBounds().left, y);
 	this->y = y;
-
 }
 
 
@@ -129,9 +123,9 @@ void GameObject::setAnimation(Animation animation)
 
 //get animation
 //postcondition: Animation
-Animation GameObject::getAnimation() 
+Animation* GameObject::getAnimation() 
 {
-	return animation;
+	return &animation;
 }
 
 
@@ -154,9 +148,9 @@ bool GameObject::toDie()
 //do on frame of logic for the object
 void GameObject::step()
 {
-	if (this->team != 0) {
+	if (this-team != 0 && team != -1) {
 		//apply gravity  
-		if ((team != 0 || team != -1) && this->YVelocity <= 18) {
+		if ((team != 0 && team != -1) && this->YVelocity <= 18) {
 			this->YVelocity += 6;
 		}
 
@@ -170,12 +164,14 @@ void GameObject::step()
 		if (YVelocity > 18) {
 			YVelocity = 18;
 		}
-		if (y < 500 || YVelocity < 0) {
+		if (y < 36 || YVelocity < 0) {
 			this->setY(y + YVelocity);
 		}
-
+		if (y > 36) {
+			this->setY(36);
+		}
 		//go to next animation
-		this->nextAnimation(this->getAnimation());
+		this->nextAnimation(animation);
 	}
 }
 
@@ -251,7 +247,6 @@ void GameObject::collision(GameObject* other)
 		break;
 	case 2: 
 		cout << "i am a powerup" << endl;
-		
 		break;
 	}
 }
@@ -261,8 +256,8 @@ void GameObject::collision(GameObject* other)
 //If there is a collision, the function calls the collision side function
 //Postcondition: 0-Top 1-Right 2-Bottom 3-Left
 void GameObject::collisionSide(GameObject* o) {
-	sf::FloatRect a = this->getAnimation().getSprite()->getGlobalBounds();
-	sf::FloatRect b = o->getAnimation().getSprite()->getGlobalBounds();
+	sf::FloatRect a = animation.getSprite()->getGlobalBounds();
+	sf::FloatRect b = o->getAnimation()->getSprite()->getGlobalBounds();
 	double thisBottom = a.top + a.height, oBottom = b.top + b.height, oRight = b.left + b.width, thisRight = a.left + a.width;
 
 	double bottomCollision = oBottom - a.top, topCollision = thisBottom - b.top, leftCollision = thisRight - b.left, rightCollision = oRight - a.left;
@@ -294,12 +289,47 @@ void GameObject::collisionSide(GameObject* o) {
 	}
 }
 
+void GameObject::textureRect(int x, int y, int w, int h)
+{
+	
+	if (h == -1) 
+	{
+		h = animation.getTexture()->getSize().y;
+	}
+	if (w == -1)
+	{
+		w = animation.getTexture()->getSize().x;
+	}
+	
+	if (x < 0) 
+	{
+		x = 0;
+	}
+	if (y < 0) 
+	{
+		y = 0;
+	}
+	cout << animation.getTexture()->getSize().x << ", " << animation.getTexture()->getSize().y << endl;
+	/*
+	if (x + w > animation.getTexture()->getSize().x) 
+	{
+		w = animation.getTexture()->getSize().x - x;
+	}
+	if (y + h > animation.getTexture()->getSize().y) 
+	{
+		w = animation.getTexture()->getSize().y - h;
+	}
+	*/
+
+	animation.getSprite()->setTextureRect(sf::IntRect(x, y, w, h));
+}
+
 
 //left collision logic
 void GameObject::collideLeft(GameObject* o)
 {
-	int distance = this->getAnimation().getSprite()->getGlobalBounds().left - (o->getAnimation().getSprite()->getGlobalBounds().left 
-		+ o->getAnimation().getSprite()->getGlobalBounds().width);
+	int distance = animation.getSprite()->getGlobalBounds().left - (o->getAnimation()->getSprite()->getGlobalBounds().left
+		+ o->getAnimation()->getSprite()->getGlobalBounds().width);
 	
 	this->setX(this->getX() - distance);
 	this->setVX(0);
@@ -309,8 +339,8 @@ void GameObject::collideLeft(GameObject* o)
 //right collision logic
 void GameObject::collideRight(GameObject* o)
 {
-	int distance = this->getAnimation().getSprite()->getGlobalBounds().left + this->getAnimation().getSprite()->getGlobalBounds().width
-		- o->getAnimation().getSprite()->getGlobalBounds().left;
+	int distance = animation.getSprite()->getGlobalBounds().left + animation.getSprite()->getGlobalBounds().width
+		- o->getAnimation()->getSprite()->getGlobalBounds().left;
 
 	this->setX(this->getX() - distance);
 	this->setVX(0);
@@ -320,8 +350,8 @@ void GameObject::collideRight(GameObject* o)
 //top collision logic
 void GameObject::collideTop(GameObject* o)
 {
-	int distance = o->getAnimation().getSprite()->getGlobalBounds().top + o->getAnimation().getSprite()->getGlobalBounds().height
-		- this->getAnimation().getSprite()->getGlobalBounds().top;
+	int distance = o->getAnimation()->getSprite()->getGlobalBounds().top + o->getAnimation()->getSprite()->getGlobalBounds().height
+		- animation.getSprite()->getGlobalBounds().top;
 
 	this->setY(this->getY() + distance);
 	this->setVY(0);
@@ -331,8 +361,8 @@ void GameObject::collideTop(GameObject* o)
 //top collision logic
 void GameObject::collideBottom(GameObject* o)
 {
-	int distance = this->getAnimation().getSprite()->getGlobalBounds().top + this->getAnimation().getSprite()->getGlobalBounds().height
-		- o->getAnimation().getSprite()->getGlobalBounds().top;
+	int distance = animation.getSprite()->getGlobalBounds().top + animation.getSprite()->getGlobalBounds().height
+		- o->getAnimation()->getSprite()->getGlobalBounds().top;
 
 	this->grounded = true;
 
