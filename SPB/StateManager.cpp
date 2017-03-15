@@ -42,7 +42,7 @@ void StateManager::handleEvents()
 	objects.push_back(map);
 
 	Animation myAnimation("mario", true);
-	player = new GameObject(300, 0, myAnimation);
+	player = new GameObject(6000, 0, myAnimation);
 	player->setTeam(1);
 	int animation = 1;
 	Animation platformA("test",true);
@@ -126,13 +126,13 @@ void StateManager::handleEvents()
 			//set up the default texture for the background
 			//divide pos by 2 because scale
 			scale = 2;
-			objects.at(0)->textureRect(player->getX()/scale - SCREEN_WIDTH / 2, player->getY() - SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
+			objects.at(0)->textureRect((player->getX() - SCREEN_WIDTH / 2) / scale, player->getY() - SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 			map->getAnimation()->getSprite()->setPosition(sf::Vector2f(player->getX() - SCREEN_WIDTH / 2, - SCREEN_HEIGHT / 2));
 
 			//set up the view
 			view->move(sf::Vector2f(-view->getCenter().x + player->getX() + player->getWidth() / 2
 				, -view->getCenter().y + player->getY() + player->getHeight() / 2));
-
+			cout << player->getX() << endl;
 			//set up view for side of map
 			if (view->getCenter().x - SCREEN_WIDTH / 2 < 0) 
 			{
@@ -140,13 +140,12 @@ void StateManager::handleEvents()
 				objects.at(0)->textureRect(- SCREEN_WIDTH / 2, player->getY() - SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 				map->getAnimation()->getSprite()->setPosition(sf::Vector2f(0, - SCREEN_HEIGHT / 2));
 			}
-			if (view->getCenter().x > map->getAnimation()->getTexture()->getSize().x * scale)
+			if (view->getCenter().x + SCREEN_WIDTH/2 > map->getAnimation()->getTexture()->getSize().x * scale)
 			{
-
-				view->setCenter(sf::Vector2f(map->getAnimation()->getTexture()->getSize().x * 2, view->getCenter().y));
-				objects.at(0)->textureRect(map->getAnimation()->getTexture()->getSize().x -SCREEN_WIDTH,
+				view->setCenter(sf::Vector2f(map->getAnimation()->getTexture()->getSize().x * scale -SCREEN_WIDTH/2, view->getCenter().y));
+				objects.at(0)->textureRect(map->getAnimation()->getTexture()->getSize().x -SCREEN_WIDTH /2,
 					player->getY() - SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
-				map->getAnimation()->getSprite()->setPosition(sf::Vector2f(map->getAnimation()->getTexture()->getSize().x * 2 - SCREEN_WIDTH -400
+				map->getAnimation()->getSprite()->setPosition(sf::Vector2f(map->getAnimation()->getTexture()->getSize().x * scale - SCREEN_WIDTH
 					, -SCREEN_HEIGHT / 2));
 			}
 			window->setView(*view);//attach the view
