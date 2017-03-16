@@ -5,7 +5,7 @@
 class Animation
 {
 public:
-	Animation(std::string, bool);
+	Animation(std::string, bool,int frames = 1);
 	Animation();
 	~Animation();
 	
@@ -13,12 +13,17 @@ public:
 	bool getStill();
 	std::string getName();
 	void setFrame(int);
+	int getCurrentFrame();
 	sf::Texture* getTexture();
 	sf::Sprite* getSprite();
+	int getFrames();
+
+	//actual loading of the image
 	void loadSprite(std::string, int x = 0, int y = 0, int w = -1, int h = -1);
 
 private:
 	int frame;
+	int frames;//how many frames for the animations
 	std::string name;
 	std::string oldpath= "";
 	bool isStill;

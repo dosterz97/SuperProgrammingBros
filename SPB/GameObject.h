@@ -31,13 +31,17 @@ public:
 	double getWidth();
 	void setGrounded(bool);
 	bool isGrounded();
+	void setMoving(bool);
+	bool isMoving();
+	void setFlipped(bool);
+	bool isFlipped();
 
 	//move things one 'step' or frame
 	void step();
 	//called when State Manager finds a collision between objects
 	void collision(GameObject*);
 	//move to the next animation given an animation
-	void nextAnimation(Animation);
+	void nextAnimation();
 	//determines which side the collision occured on
 	void collisionSide(GameObject*);
 
@@ -61,6 +65,8 @@ private:
 
 	bool dead = false;//will remove in state manager if true
 	bool grounded = false;
+	bool moving = false;
+	bool flipped = false;
 
 	Animation animation;//object animation
 };

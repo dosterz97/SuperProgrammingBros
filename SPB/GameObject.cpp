@@ -170,8 +170,6 @@ void GameObject::step()
 		if (y > 36) {
 			this->setY(36);
 		}
-		//go to next animation
-		this->nextAnimation(animation);
 	}
 }
 
@@ -196,9 +194,15 @@ void GameObject::setTeam(int newTeam)
 
 //move to the next animation based upon what animation was given
 //precondition: Animation
-void GameObject::nextAnimation(Animation currentAnimation) 
+void GameObject::nextAnimation() 
 {
-	
+	if (animation.getFrames() == animation.getCurrentFrame()) {
+		//reset counter to 1
+		animation.setFrame(1);
+	}
+	else {
+		animation.setFrame(animation.getCurrentFrame() + 1);
+	}
 }
 
 
@@ -309,7 +313,7 @@ void GameObject::textureRect(int x, int y, int w, int h)
 	{
 		y = 0;
 	}
-	cout << animation.getTexture()->getSize().x << ", " << animation.getTexture()->getSize().y << endl;
+	//cout << animation.getTexture()->getSize().x << ", " << animation.getTexture()->getSize().y << endl;
 	/*
 	if (x + w > animation.getTexture()->getSize().x) 
 	{
@@ -376,6 +380,32 @@ void GameObject::collideBottom(GameObject* o)
 bool GameObject::isGrounded() 
 {
 	return this->grounded;
+}
+
+void GameObject::setMoving(bool moving)
+{
+	this->moving = moving;
+}
+
+bool GameObject::isMoving()
+{
+	return moving;
+}
+
+void GameObject::setFlipped(bool flipped)
+{
+	int offset = -1;
+	if (this->flipped == flipped) {
+		cout << "heheheheh" << endl;
+		return;//nothing to do
+	}
+	animation.getSprite()->scale(offset * 1, 1);
+	this->flipped = flipped;
+}
+
+bool GameObject::isFlipped()
+{
+	return flipped;
 }
 
 

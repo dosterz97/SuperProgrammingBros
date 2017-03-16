@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "StateManager.h"
 
+#include <fstream>
 #include <iostream>
 #include <ctime>
 #include <ratio>
@@ -41,17 +42,13 @@ void StateManager::handleEvents()
 	map->setTeam(-1);
 	objects.push_back(map);
 
-	Animation myAnimation("mario", true);
-	player = new GameObject(6000, 0, myAnimation);
+	Animation myAnimation("mario", true, 3);
+	player = new GameObject(200, 0, myAnimation);
 	player->setTeam(1);
 	int animation = 1;
-	Animation platformA("test",true);
-	GameObject* platform = new GameObject(400,0, platformA);
-	platform->setTeam(0);
 	objects.push_back(player);
-	//objects.push_back(platform);
 
-	
+	loadMap();
 
 
 	view = new sf::View(sf::FloatRect(player->getX() - SCREEN_WIDTH / 2, player->getY() -
@@ -87,11 +84,15 @@ void StateManager::handleEvents()
 							break;
 						case sf::Keyboard::Right:
 							player->setVX(10);
+							player->setMoving(true);
+							//player->setFlipped(false);
 							break;
 						case sf::Keyboard::Down:
 							break;
 						case sf::Keyboard::Left:
 							player->setVX(-10);
+							player->setMoving(true);
+							//player->setFlipped(true);
 							break;
 						}
 					}
@@ -99,27 +100,30 @@ void StateManager::handleEvents()
 						switch (event.key.code)
 						{
 						case sf::Keyboard::Up:
+							player->getAnimation()->setFrame(1);
 							break;
 						case sf::Keyboard::Right:
 							player->setVX(0);
+							player->getAnimation()->setFrame(1);
+							player->setMoving(false);
 							break;
 						case sf::Keyboard::Down:
+							player->getAnimation()->setFrame(1);
 							break;
 						case sf::Keyboard::Left:
 							player->setVX(0);
+							player->getAnimation()->setFrame(1);
+							player->setMoving(false);
 							break;
 						}
 					}
 				}
 				
 
-			if (frame % 5 == 0)
-				myAnimation.setFrame(animation++);
-			if (animation == 4)
-				animation = 1;
+			
 
 			//Do the stuffs 
-			stepAll();
+			stepAll(frame);
 
 			window->clear();
 
@@ -132,7 +136,7 @@ void StateManager::handleEvents()
 			//set up the view
 			view->move(sf::Vector2f(-view->getCenter().x + player->getX() + player->getWidth() / 2
 				, -view->getCenter().y + player->getY() + player->getHeight() / 2));
-			cout << player->getX() << endl;
+
 			//set up view for side of map
 			if (view->getCenter().x - SCREEN_WIDTH / 2 < 0) 
 			{
@@ -166,24 +170,31 @@ void StateManager::handleEvents()
 
 
 //step all of the objects
-void StateManager::stepAll() 
+void StateManager::stepAll(int frame) 
 {
-	for (int i = 0; i < this->objects.size(); i++)
+	for (int i = 0; i < objects.size(); i++)
 	{
-		if (this->objects.at(i) != NULL)
+		//step object
+		if (objects.at(i) != NULL)
 		{
-			this->objects.at(i)->step();
+			 objects.at(i)->step();
+
+			//move animation
+			if (objects.at(i)->isMoving() && frame % 4 == 0) {
+				objects.at(i)->nextAnimation();
+			}
 		}
 	}
+
 
 	int count = objects.size();
 	
 	//Check for collisions
 	for (int i = 0; i < count; i++) {
-		GameObject* a = this->objects.at(i);
+		GameObject* a =  objects.at(i);
 		for (int j = i + 1; j < count; j++) 
 		{
-			GameObject* b = this->objects.at(j);
+			GameObject* b =  objects.at(j);
 			//Check the team of each pair
 			//If the are the same team ask if they touch
 			if (a->getTeam() != -1 && b->getTeam() != -1 && (a->getTeam() != b->getTeam())) 
@@ -204,11 +215,11 @@ void StateManager::stepAll()
 	//Remove any objects set to die
 	//Set grounded to false so they wont float
 	for (int i = 0; i < count; i++) {
-		GameObject* o = this->objects.at(i);
+		GameObject* o =  objects.at(i);
 
 		if (o->toDie()) {
 			delete o;
-			this->objects.at(i) = NULL;
+			 objects.at(i) = NULL;
 		}
 
 		o->setGrounded(false);
@@ -218,9 +229,18 @@ void StateManager::stepAll()
 
 //load the map based on the given numbers
 //precondition: world (int), level (int)
-void StateManager::loadMap(int world, int level) 
+void StateManager::loadMap(string mapToLoad) 
 {
-	
+	ifstream file;
+	file.open("maps\\" + mapToLoad + ".txt");
+
+	string attribute;
+	int counter = 0;
+	while (getline(file,attribute)) {
+		cout << attribute << endl;
+		counter++;
+
+	}
 }
 
 

@@ -13,8 +13,8 @@ public:
 	~StateManager();
 
 	void handleEvents();
-	void stepAll();
-	void loadMap(int, int);
+	void stepAll(int);
+	void loadMap(string mapToLoad = "1\\1");
 	void draw();
 private:
 	int world=1;

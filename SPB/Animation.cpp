@@ -6,20 +6,22 @@
 using namespace std;
 //create a new animation
 //precondition: string of the animation name, bool if the animation is still
-Animation::Animation(std::string name, bool isStill)
+Animation::Animation(std::string name, bool isStill, int frames)
 {
 	this->isStill = isStill;
 	this->name = name;
 	this->frame = 1;
+	this->frames = frames;
 	if (isStill)
 		loadSprite(name);
+	sprite.scale(2, 2);
 }
 
 //default constructor
 //postcondition: a new animation object
 Animation::Animation()
 {
-	Animation("default", true);
+	Animation("test", true);
 }
 
 Animation::~Animation()
@@ -38,6 +40,7 @@ void Animation::loadSprite(std::string path, int x, int y, int w, int h)
 	
 	//modify the string so it pulls an image from the "images" file
 	path = "images\\" + path + "-"+ frameStr +".png";
+	cout << path << endl;
 	if (path != oldpath) {
 		if (w == -1 || h == -1) {
 			if (!texture.loadFromFile(path)) {}
@@ -49,7 +52,6 @@ void Animation::loadSprite(std::string path, int x, int y, int w, int h)
 	}
 	oldpath = path;
 	sprite.setTexture(texture);
-	sprite.scale(2, 2);
 	return;
 }
 
@@ -93,11 +95,22 @@ void Animation::setFrame(int frame)
 
 	return;
 }
+//different from getFrames
+//which returns the total number of sprites
+int Animation::getCurrentFrame()
+{
+	return frame;
+}
 
 //get the stretched rect
 //postcondition: a stretched rect
 sf::Sprite* Animation::getSprite()
 {
 	return &sprite;
+}
+
+int Animation::getFrames()
+{
+	return frames;
 }
 
