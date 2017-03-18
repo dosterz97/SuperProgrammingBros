@@ -34,7 +34,6 @@ void StateManager::handleEvents()
 
 	double scale = 0;
 
-	high_resolution_clock::time_point start = high_resolution_clock::now();
 
 	Animation mapAnimation("maps\\1", true);
 	GameObject* map = new GameObject(0, 0, mapAnimation);
@@ -42,17 +41,19 @@ void StateManager::handleEvents()
 	map->setTeam(-1);
 	objects.push_back(map);
 
+	//loadMap();
+
 	Animation myAnimation("mario", true, 3);
 	player = new GameObject(200, 0, myAnimation);
 	player->setTeam(1);
 	int animation = 1;
 	objects.push_back(player);
 
-	loadMap();
-
-
+	
 	view = new sf::View(sf::FloatRect(player->getX() - SCREEN_WIDTH / 2, player->getY() -
 	SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT));
+
+	high_resolution_clock::time_point start = high_resolution_clock::now();
 
 	//Game Loop
 	while (!exit)
@@ -234,13 +235,53 @@ void StateManager::loadMap(string mapToLoad)
 	ifstream file;
 	file.open("maps\\" + mapToLoad + ".txt");
 
-	string attribute;
-	int counter = 0;
-	while (getline(file,attribute)) {
-		cout << attribute << endl;
-		counter++;
-
+	string entity;
+	string x, y, type, team;
+	int counter = 0, stringCounter = 0;
+	bool isSpace = false;
+	while (getline(file, entity)) {
+		cout << entity << endl;
+		counter = 0;
+		stringCounter = 0;
+		
+		do
+		{
+			if (entity.length() == stringCounter) 
+			{
+				cout << "entity length reached" << endl;
+				createObject(stoi(x), stoi(y), stoi(type), stoi(team));
+				x = "", y = "", type = "", team = "";
+				break;
+			}
+			if (entity.substr(stringCounter, 1) == " ") 
+			{
+				counter++;
+				isSpace = true;
+			}
+			if (!isSpace) {
+				switch (counter)
+				{
+				case 0:
+					x += entity.substr(stringCounter, 1);
+					break;
+				case 1:
+					y += entity.substr(stringCounter, 1);
+					break;
+				case 2:
+					type += entity.substr(stringCounter, 1);
+					break;
+				case 3:
+					team += entity.substr(stringCounter, 1);
+					break;
+				default:
+					break;
+				}
+			}
+			stringCounter++;
+			isSpace = false;
+		} while (counter <= 4);
 	}
+	file.close();
 }
 
 
@@ -248,4 +289,17 @@ void StateManager::loadMap(string mapToLoad)
 void StateManager::draw() 
 {
 
+}
+
+//creates the objects 
+//pre condition: 
+void StateManager::createObject(int x, int y, int type, int team)
+{
+	cout << "x: " << x << " y: " << y << " type: " << type << " team: " << team << endl;
+	
+	createObjectTempAnimation = Animation("mario", true, 3);
+	GameObject* object = new GameObject(16 * 2 * x, 16 * 2 * y, createObjectTempAnimation);
+	object->setTeam(team);
+	object->setAnimation(createObjectTempAnimation);
+	objects.push_back(object);
 }
