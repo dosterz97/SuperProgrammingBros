@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "StateManager.h"
+#include "Block.h"
 
 #include <fstream>
 #include <iostream>
@@ -34,11 +35,13 @@ void StateManager::handleEvents()
 
 	double scale = 0;
 
+	myCoinAnimation = new Animation("items", true);
 
 	Animation mapAnimation("maps\\1", true);
 	GameObject* map = new GameObject(0, 0, mapAnimation);
 	map->getAnimation()->getSprite()->setTextureRect(sf::IntRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
 	map->setTeam(-1);
+	map->setVectorPosition(0);
 	objects.push_back(map);
 
 	//loadMap();
@@ -46,10 +49,18 @@ void StateManager::handleEvents()
 	Animation myAnimation("mario", true, 3);
 	player = new GameObject(200, 0, myAnimation);
 	player->setTeam(1);
+	player->setVectorPosition(1);
 	int animation = 1;
 	objects.push_back(player);
 
-	
+	Animation myAnimation2("brick", true, 1);
+	Block* block = new Block(512, -28, myAnimation2);
+	block->setVectorPosition(2);
+	block->textureRect(80, 112, 16, 16);
+
+	block->setTeam(0);
+	block->setCoins(1);
+	objects.push_back(block);
 	view = new sf::View(sf::FloatRect(player->getX() - SCREEN_WIDTH / 2, player->getY() -
 	SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT));
 
@@ -135,8 +146,7 @@ void StateManager::handleEvents()
 			map->getAnimation()->getSprite()->setPosition(sf::Vector2f(player->getX() - SCREEN_WIDTH / 2, - SCREEN_HEIGHT / 2));
 
 			//set up the view
-			view->move(sf::Vector2f(-view->getCenter().x + player->getX() + player->getWidth() / 2
-				, -view->getCenter().y + player->getY() + player->getHeight() / 2));
+			view->move(sf::Vector2f(-view->getCenter().x + player->getX() + player->getWidth() / 2, 0));
 
 			//set up view for side of map
 			if (view->getCenter().x - SCREEN_WIDTH / 2 < 0) 
@@ -180,9 +190,38 @@ void StateManager::stepAll(int frame)
 		{
 			 objects.at(i)->step();
 
+			 //TODO: Change the frame % to dynamic number
 			//move animation
 			if (objects.at(i)->isMoving() && frame % 4 == 0) {
 				objects.at(i)->nextAnimation();
+			}
+		}
+	}
+
+	//move blocks back down
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects.at(i) != NULL && objects.at(i)->getTeam() == 0 && objects.at(i)->isMoving()) {
+			objects.at(i)->setVY(objects.at(i)->getVY() + 1);
+
+			//the coin
+			GameObject* coin = new GameObject(*objects.at(i), *objects.at(i)->getAnimation());
+			//Stop block
+			if (objects.at(i)->getVY() == 4) 
+			{
+				coin->setToDie(true);
+				objects.at(i)->setMoving(false);
+				objects.at(i)->setVY(0);
+			}
+
+			//release coin
+			if (objects.at(i)->getVY() == -1)
+			{
+				coin->setAnimation(*myCoinAnimation);
+				coin->getAnimation()->getSprite()->setTextureRect(sf::IntRect(0, 96, 16,16));
+				coin->setY(coin->getY() - 32);
+				coin->setVY(0);
+				objects.push_back(coin);
+				coin->setVectorPosition(objects.size() - 1);
 			}
 		}
 	}
@@ -219,8 +258,9 @@ void StateManager::stepAll(int frame)
 		GameObject* o =  objects.at(i);
 
 		if (o->toDie()) {
+			objects.erase(o);
 			delete o;
-			 objects.at(i) = NULL;
+			objects.at(i) = NULL;
 		}
 
 		o->setGrounded(false);

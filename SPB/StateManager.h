@@ -29,6 +29,6 @@ private:
 	//the camera to follow the player
 	sf::View* view;
 
-	
+	Animation* myCoinAnimation;
 };
 

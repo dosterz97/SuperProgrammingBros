@@ -35,6 +35,11 @@ public:
 	bool isMoving();
 	void setFlipped(bool);
 	bool isFlipped();
+	void setCoins(int);
+	void addCoin();
+	int getCoins();
+	void setVectorPosition(int pos);
+	int getVectorPosition();
 
 	//move things one 'step' or frame
 	void step();
@@ -56,17 +61,20 @@ public:
 	void collideTop(GameObject*);
 	void collideBottom(GameObject*);
 
+	virtual bool isAccessible();
+
 private: 
 	double x,y;//cordinate
 	double width, height;//size
 	double XVelocity, YVelocity;
 
-	int team;
+	int team, coins = 0, vectorPosition;
 
 	bool dead = false;//will remove in state manager if true
 	bool grounded = false;
 	bool moving = false;
 	bool flipped = false;
+
 
 	Animation animation;//object animation
 };

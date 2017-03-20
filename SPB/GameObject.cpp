@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameObject.h"
 #include <iostream>
+#include "Block.h"
 
 using namespace std;
 
@@ -245,6 +246,7 @@ void GameObject::collision(GameObject* other)
 	case -1:	
 		break;
 	case 0:
+		collisionSide(other);
 		break;
 	case 1:
 		collisionSide(other);
@@ -267,25 +269,54 @@ void GameObject::collisionSide(GameObject* o) {
 	double bottomCollision = oBottom - a.top, topCollision = thisBottom - b.top, leftCollision = thisRight - b.left, rightCollision = oRight - a.left;
 
 	double max = bottomCollision;
-	if (topCollision < bottomCollision && topCollision < leftCollision && topCollision < rightCollision)
-	{
-		//bottom collision
-		collideBottom(o);
-		cout << "bot" << endl;
+
+	/*cout << "bottom collision: " << bottomCollision << endl;
+	cout << "top collision: " << topCollision << endl;
+	cout << "left collision: " << leftCollision << endl;
+	cout << "right collision: " << rightCollision << endl;*/
+
+	//find the maximum infraction into the oppossing object
+	if (topCollision > max) {
+		max = topCollision;
 	}
-	else if (bottomCollision < topCollision && bottomCollision < leftCollision && bottomCollision < rightCollision)
+	if (leftCollision > max) {
+		max = leftCollision;
+	}
+	if (rightCollision > max) {
+		max = rightCollision;
+	}
+	if (topCollision == max)
 	{
 		//top collision
 		collideTop(o);
 		cout << "top" << endl;
 	}
-	else if (leftCollision < rightCollision && leftCollision < topCollision && leftCollision < bottomCollision)
+	else if (bottomCollision==max)
+	{
+		//bottom collision
+
+		//cast to block call different collide bottom
+		if (this->team == 0) {
+			try {
+				Block* c = dynamic_cast<Block*>(this);
+				c->collideBottom(o);
+			}
+			catch (int n){
+				cout << "failed to cast from GameObject to Block" << endl;
+			}
+		}
+		else {
+			collideBottom(o);
+			cout << "bot" << endl;
+		}
+	}
+	if (rightCollision == max)
 	{
 		//right collision
 		collideRight(o);
 		cout << "rig" << endl;
 	}
-	else if (rightCollision < leftCollision && rightCollision < topCollision && rightCollision < bottomCollision) 
+	else if (leftCollision == max)
 	{
 		//left collision
 		collideLeft(o);
@@ -326,6 +357,8 @@ void GameObject::textureRect(int x, int y, int w, int h)
 	*/
 
 	animation.getSprite()->setTextureRect(sf::IntRect(x, y, w, h));
+	this->width = 2*w;
+	this->height = 2*h;
 }
 
 
@@ -334,7 +367,6 @@ void GameObject::collideLeft(GameObject* o)
 {
 	int distance = animation.getSprite()->getGlobalBounds().left - (o->getAnimation()->getSprite()->getGlobalBounds().left
 		+ o->getAnimation()->getSprite()->getGlobalBounds().width);
-	
 	this->setX(this->getX() - distance);
 	this->setVX(0);
 }
@@ -345,7 +377,6 @@ void GameObject::collideRight(GameObject* o)
 {
 	int distance = animation.getSprite()->getGlobalBounds().left + animation.getSprite()->getGlobalBounds().width
 		- o->getAnimation()->getSprite()->getGlobalBounds().left;
-
 	this->setX(this->getX() - distance);
 	this->setVX(0);
 }
@@ -356,22 +387,24 @@ void GameObject::collideTop(GameObject* o)
 {
 	int distance = o->getAnimation()->getSprite()->getGlobalBounds().top + o->getAnimation()->getSprite()->getGlobalBounds().height
 		- animation.getSprite()->getGlobalBounds().top;
-
 	this->setY(this->getY() + distance);
 	this->setVY(0);
 }
 
 
-//top collision logic
+//bottom collision logic
 void GameObject::collideBottom(GameObject* o)
 {
 	int distance = animation.getSprite()->getGlobalBounds().top + animation.getSprite()->getGlobalBounds().height
 		- o->getAnimation()->getSprite()->getGlobalBounds().top;
-
 	this->grounded = true;
-
 	this->setY(this->getY() - distance);
 	this->setVY(0);
+}
+
+bool GameObject::isAccessible()
+{
+	return true;
 }
 
 
@@ -396,7 +429,6 @@ void GameObject::setFlipped(bool flipped)
 {
 	int offset = -1;
 	if (this->flipped == flipped) {
-		cout << "heheheheh" << endl;
 		return;//nothing to do
 	}
 	animation.getSprite()->scale(offset * 1, 1);
@@ -408,6 +440,31 @@ bool GameObject::isFlipped()
 	return flipped;
 }
 
+void GameObject::setCoins(int coins)
+{
+	this->coins = coins;
+}
+
+void GameObject::addCoin()
+{
+	coins++;
+}
+
+int GameObject::getCoins()
+{
+	return coins;
+}
+
+void GameObject::setVectorPosition(int pos)
+{
+	vectorPosition = pos;
+}
+
+int GameObject::getVectorPosition()
+{
+	return vectorPosition;
+}
+
 
 //set the grounded variable
 //precondition: bool
@@ -415,5 +472,6 @@ void GameObject::setGrounded(bool grounded)
 {
 	this->grounded = grounded;
 }
+
 
 

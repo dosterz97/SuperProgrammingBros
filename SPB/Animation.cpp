@@ -40,7 +40,7 @@ void Animation::loadSprite(std::string path, int x, int y, int w, int h)
 	
 	//modify the string so it pulls an image from the "images" file
 	path = "images\\" + path + "-"+ frameStr +".png";
-	cout << path << endl;
+	//cout << path << endl;
 	if (path != oldpath) {
 		if (w == -1 || h == -1) {
 			if (!texture.loadFromFile(path)) {}
