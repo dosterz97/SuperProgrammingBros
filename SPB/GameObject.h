@@ -6,8 +6,8 @@ class GameObject
 {
 public:
 	GameObject();
-	GameObject(GameObject, Animation);//Place a new animation where an object was
-	GameObject(double, double, Animation);
+	GameObject(GameObject, Animation,int);//Place a new animation where an object was
+	GameObject(double, double, Animation,int);
 	~GameObject();
 
 	//gets and sets for instance variables
@@ -40,7 +40,7 @@ public:
 	int getCoins();
 	void setVectorPosition(int pos);
 	int getVectorPosition();
-
+	int getFrameWhenCreated();
 	//move things one 'step' or frame
 	void step();
 	//called when State Manager finds a collision between objects
@@ -68,7 +68,7 @@ private:
 	double width, height;//size
 	double XVelocity, YVelocity;
 
-	int team, coins = 0, vectorPosition;
+	int team, coins = 0, vectorPosition,frameWhenCreated;
 
 	bool dead = false;//will remove in state manager if true
 	bool grounded = false;

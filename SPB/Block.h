@@ -5,7 +5,7 @@ class Block :
 {
 public:
 	Block();
-	Block(int x,int y,Animation a);
+	Block(int x,int y,Animation a,int frame);
 
 	void foo();
 	void collideBottom(GameObject*);

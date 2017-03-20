@@ -12,10 +12,9 @@ GameObject::GameObject() {
 
 //Put an animation where some object is
 //Preconditon: GameObject, Animation
-GameObject::GameObject(GameObject object, Animation animation)
+GameObject::GameObject(GameObject object, Animation animation,int frame)
 {
 	this->setAnimation(animation);
-	cout << animation.getName() << endl;
 	this->setX(object.getX());
 	this->setY(object.getY());
 	this->setVX(object.getVX());
@@ -24,12 +23,12 @@ GameObject::GameObject(GameObject object, Animation animation)
 	this->setToDie(false);
 	this->setWidth(this->animation.getSprite()->getGlobalBounds().width);
 	this->setHeight(this->animation.getSprite()->getGlobalBounds().height);
-
+	this->frameWhenCreated = frame;
 }
 
 //Create a new GameObject
 //Precondition: x position, y position, object animation
-GameObject::GameObject(double x, double y, Animation animation) 
+GameObject::GameObject(double x, double y, Animation animation, int frame) 
 {
 	this->animation = animation;
 	this->setX(x);
@@ -40,6 +39,7 @@ GameObject::GameObject(double x, double y, Animation animation)
 	this->setToDie(false);
 	this->setWidth(this->animation.getSprite()->getGlobalBounds().width);
 	this->setHeight(this->animation.getSprite()->getGlobalBounds().height);
+	this->frameWhenCreated = frame;
 }
 
 
@@ -402,11 +402,6 @@ void GameObject::collideBottom(GameObject* o)
 	this->setVY(0);
 }
 
-bool GameObject::isAccessible()
-{
-	return true;
-}
-
 
 //get the grounded variable
 //postcondition: bool
@@ -463,6 +458,11 @@ void GameObject::setVectorPosition(int pos)
 int GameObject::getVectorPosition()
 {
 	return vectorPosition;
+}
+
+int GameObject::getFrameWhenCreated()
+{
+	return frameWhenCreated;
 }
 
 

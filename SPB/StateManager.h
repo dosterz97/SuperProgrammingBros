@@ -30,5 +30,6 @@ private:
 	sf::View* view;
 
 	Animation* myCoinAnimation;
+	GameObject* coin;
 };
 

@@ -8,9 +8,9 @@ Block::Block()
 {
 }
 
-Block::Block(int x, int y, Animation a) : GameObject(x, y, a)
+Block::Block(int x, int y, Animation a, int frame) : GameObject(x, y, a,frame)
 {
-	GameObject(x, y, a);
+	GameObject(x, y, a,frame);
 }
 
 
@@ -28,5 +28,8 @@ void Block::collideBottom(GameObject* o) {
 	if (!this->isMoving()) {
 		this->setVY(-3);
 		this->setMoving(true);
+	}
+	if (getCoins() < 2) {
+		
 	}
 }
