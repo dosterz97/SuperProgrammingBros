@@ -28,8 +28,5 @@ void Block::collideBottom(GameObject* o) {
 	if (!this->isMoving()) {
 		this->setVY(-3);
 		this->setMoving(true);
-	}
-	if (getCoins() < 2) {
-		
-	}
+	}	
 }

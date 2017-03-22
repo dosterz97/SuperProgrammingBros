@@ -240,7 +240,7 @@ double GameObject::getWidth()
 
 
 //do the collision logic for the object
-void GameObject::collision(GameObject* other)
+void GameObject::collision(GameObject* other, Animation* animations[])
 {
 	switch (team) {
 	case -1:	
@@ -252,7 +252,8 @@ void GameObject::collision(GameObject* other)
 		collisionSide(other);
 		break;
 	case 2: 
-		cout << "i am a powerup" << endl;
+		collisionSide(other);
+		powerupCollision(other, animations);
 		break;
 	}
 }
@@ -262,65 +263,68 @@ void GameObject::collision(GameObject* other)
 //If there is a collision, the function calls the collision side function
 //Postcondition: 0-Top 1-Right 2-Bottom 3-Left
 void GameObject::collisionSide(GameObject* o) {
-	sf::FloatRect a = animation.getSprite()->getGlobalBounds();
-	sf::FloatRect b = o->getAnimation()->getSprite()->getGlobalBounds();
-	double thisBottom = a.top + a.height, oBottom = b.top + b.height, oRight = b.left + b.width, thisRight = a.left + a.width;
-
-	double bottomCollision = oBottom - a.top, topCollision = thisBottom - b.top, leftCollision = thisRight - b.left, rightCollision = oRight - a.left;
-
-	double max = bottomCollision;
-
-	/*cout << "bottom collision: " << bottomCollision << endl;
-	cout << "top collision: " << topCollision << endl;
-	cout << "left collision: " << leftCollision << endl;
-	cout << "right collision: " << rightCollision << endl;*/
-
-	//find the maximum infraction into the oppossing object
-	if (topCollision > max) {
-		max = topCollision;
-	}
-	if (leftCollision > max) {
-		max = leftCollision;
-	}
-	if (rightCollision > max) {
-		max = rightCollision;
-	}
-	if (topCollision == max)
+	if (o->getTeam() != 2)//dont worry about the other object if a powerup
 	{
-		//top collision
-		collideTop(o);
-		cout << "top" << endl;
-	}
-	else if (bottomCollision==max)
-	{
-		//bottom collision
+		sf::FloatRect a = animation.getSprite()->getGlobalBounds();
+		sf::FloatRect b = o->getAnimation()->getSprite()->getGlobalBounds();
+		double thisBottom = a.top + a.height, oBottom = b.top + b.height, oRight = b.left + b.width, thisRight = a.left + a.width;
 
-		//cast to block call different collide bottom
-		if (this->team == 0) {
-			try {
-				Block* c = dynamic_cast<Block*>(this);
-				c->collideBottom(o);
+		double bottomCollision = oBottom - a.top, topCollision = thisBottom - b.top, leftCollision = thisRight - b.left, rightCollision = oRight - a.left;
+
+		double max = bottomCollision;
+
+		/*cout << "bottom collision: " << bottomCollision << endl;
+		cout << "top collision: " << topCollision << endl;
+		cout << "left collision: " << leftCollision << endl;
+		cout << "right collision: " << rightCollision << endl;*/
+
+		//find the maximum infraction into the oppossing object
+		if (topCollision > max) {
+			max = topCollision;
+		}
+		if (leftCollision > max) {
+			max = leftCollision;
+		}
+		if (rightCollision > max) {
+			max = rightCollision;
+		}
+		if (topCollision == max)
+		{
+			//top collision
+			collideTop(o);
+			//cout << "top" << endl;
+		}
+		else if (bottomCollision == max)
+		{
+			//bottom collision
+
+			//cast to block call different collide bottom
+			if (this->team == 0) {
+				try {
+					Block* c = dynamic_cast<Block*>(this);
+					c->collideBottom(o);
+				}
+				catch (int n) {
+					cout << "failed to cast from GameObject to Block" << endl;
+				}
 			}
-			catch (int n){
-				cout << "failed to cast from GameObject to Block" << endl;
+			else {
+				collideBottom(o);
+				//cout << "bot" << endl;
 			}
 		}
-		else {
-			collideBottom(o);
-			cout << "bot" << endl;
+		if (rightCollision == max)
+		{
+			//right collision
+			collideRight(o);
+			//cout << "rig" << endl;
 		}
-	}
-	if (rightCollision == max)
-	{
-		//right collision
-		collideRight(o);
-		cout << "rig" << endl;
-	}
-	else if (leftCollision == max)
-	{
-		//left collision
-		collideLeft(o);
-		cout << "lef" << endl;
+		else if (leftCollision == max)
+		{
+			//left collision
+			collideLeft(o);
+			//cout << "lef" << endl;
+		}
 	}
 }
 
@@ -402,6 +406,32 @@ void GameObject::collideBottom(GameObject* o)
 	this->setVY(0);
 }
 
+void GameObject::powerupCollision(GameObject* other, Animation* animations[])
+{
+	if (other->getTeam() == 1)
+	{
+		this->setToDie(true);
+		
+		if (other->getAnimation()->getName() == "mario-small")
+		{
+			if (this->animation.getName() == "mushroom" || this->animation.getName() == "flower")
+			{
+				other->setAnimation(*animations[6]);
+				other->setWidth(other->getAnimation()->getSprite()->getGlobalBounds().width);
+				other->setHeight(other->getAnimation()->getSprite()->getGlobalBounds().height);
+			}
+		}
+		
+		//TODO: other powerup scenarios
+	}
+}
+
+bool GameObject::isAccessible()
+{
+	//this doesnt mean anything
+	return true;
+}
+
 
 //get the grounded variable
 //postcondition: bool
@@ -463,6 +493,16 @@ int GameObject::getVectorPosition()
 int GameObject::getFrameWhenCreated()
 {
 	return frameWhenCreated;
+}
+
+void GameObject::setPowerUp(int powerup)
+{
+	this->powerup = powerup;
+}
+
+int GameObject::getPowerUp()
+{
+	return powerup;
 }
 
 

@@ -35,31 +35,36 @@ void StateManager::handleEvents()
 
 	double scale = 0;
 
+	setupAnimations();
+
 	myCoinAnimation = new Animation("coin", true);
+	myShroom = new Animation("flower", true, 1);
 
 	Animation mapAnimation("maps\\1", true);
 	GameObject* map = new GameObject(0, 0, mapAnimation, frame);
 	map->getAnimation()->getSprite()->setTextureRect(sf::IntRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
 	map->setTeam(-1);
-	map->setVectorPosition(objects.size()-1);
+	map->setVectorPosition(objects.size());
 	objects.push_back(map);
 
 	//loadMap();
 
-	Animation myAnimation("mario", true, 3);
-	player = new GameObject(200, 0, myAnimation,frame);
+	player = new GameObject(200, 0, *animations[5],frame);
 	player->setTeam(1);
-	player->setVectorPosition(objects.size()-1);
+	player->setVectorPosition(objects.size());
 	int animation = 1;
 	objects.push_back(player);
 
-	Animation myAnimation2("brick", true, 1);
-	Block* block = new Block(512, -28, myAnimation2,frame);
-	block->setVectorPosition(objects.size()-1);
-	block->textureRect(80, 112, 16, 16);
+	Block* block = new Block(512, -28, *animations[0],frame);
+	block->setVectorPosition(objects.size());
 	block->setTeam(0);
-	block->setCoins(1);
+	block->setCoins(0);
+	block->setPowerUp(2);
 	objects.push_back(block);
+	
+
+	
+
 	view = new sf::View(sf::FloatRect(player->getX() - SCREEN_WIDTH / 2, player->getY() -
 	SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT));
 
@@ -215,16 +220,44 @@ void StateManager::stepAll(int frame)
 				objects.at(i)->setVY(0);
 			}
 
-			//release coin
-			if (objects.at(i)->getVY() == -1 && objects.at(i)->getCoins() > 0)
+			//release powerup
+			if (objects.at(i)->getVY() == -1 )
 			{
-				coin = new GameObject(*objects.at(i), *myCoinAnimation,frame);
-				coin->setY(coin->getY() - 32);//move above the block
-				coin->setX(coin->getX() + 6);//offset block size
-				coin->setVY(0);//block has velocity
-				coin->setVectorPosition(objects.size());//where to find later
-				objects.push_back(coin);
+				if (objects.at(i)->getCoins() > 0)
+				{
+					coin = new GameObject(*objects.at(i), *myCoinAnimation, frame);
+					coin->setY(coin->getY() - 32);//move above the block
+					coin->setX(coin->getX() + 6);//offset block size
+					coin->setVY(0);//block has velocity
+					coin->setVectorPosition(objects.size());//where to find later
+					objects.push_back(coin);
+				}
+				else
+				{
+					objects.at(i)->setAnimation(*animations[1]);
+				}
+				if (objects.at(i)->getPowerUp() == 1)
+				{
+					powerup = new GameObject(*objects.at(i), *myShroom, frame);
+					powerup->setY(powerup->getY() - 32);
+					powerup->setTeam(2);
+					powerup->setVectorPosition(objects.size());
+					objects.at(i)->setPowerUp(0);
+					objects.push_back(powerup);
+					objects.at(i)->setAnimation(*animations[1]);
+				}
+				else if (objects.at(i)->getPowerUp() == 2)
+				{
+					powerup = new GameObject(*objects.at(i), *myShroom, frame);
+					powerup->setY(powerup->getY() - 32);
+					powerup->setTeam(2);
+					powerup->setVectorPosition(objects.size());
+					objects.at(i)->setPowerUp(0);
+					objects.push_back(powerup);
+					objects.at(i)->setAnimation(*animations[1]);
+				}
 			}
+			
 		}
 	}
 
@@ -247,8 +280,8 @@ void StateManager::stepAll(int frame)
 				if (x1 < x2 + w2 && x1 + w1 > x2 && 
 					y1 < y2 + h2 && y1 + h1 > y2) 
 				{
-					a->collision(b);
-					b->collision(a);
+					a->collision(b,animations);
+					b->collision(a,animations);
 				}
 			}
 		}
@@ -268,6 +301,16 @@ void StateManager::stepAll(int frame)
 		}
 
 	}
+}
+
+void StateManager::setupAnimations()
+{
+	animations[0] = new Animation("question-block", true);
+	animations[1] = new Animation("used-block", true);
+
+	animations[5] = new Animation("mario-small", true, 3);
+	animations[6] = new Animation("mario", true, 3);
+
 }
 
 

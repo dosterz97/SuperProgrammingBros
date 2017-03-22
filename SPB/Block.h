@@ -10,5 +10,7 @@ public:
 	void foo();
 	void collideBottom(GameObject*);
 	~Block();
+
+private: 
 };
 

@@ -14,6 +14,7 @@ public:
 
 	void handleEvents();
 	void stepAll(int);
+	void setupAnimations();
 	void loadMap(string mapToLoad = "1\\1");
 	void draw();
 	void createObject(int, int, int, int);
@@ -28,8 +29,10 @@ private:
 
 	//the camera to follow the player
 	sf::View* view;
-
+	Animation* animations[20];
 	Animation* myCoinAnimation;
+	Animation* myShroom;
 	GameObject* coin;
+	GameObject* powerup;
 };
 
