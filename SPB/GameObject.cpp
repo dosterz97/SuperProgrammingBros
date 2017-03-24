@@ -147,9 +147,9 @@ bool GameObject::toDie()
 
 
 //do on frame of logic for the object
-void GameObject::step()
+void GameObject::step(vector<GameObject*> objects)
 {
-	if (this-team != 0 && team != -1) {
+	if (team != 0 && team != -1) {
 		//apply gravity  
 		if ((team != 0 && team != -1) && this->YVelocity <= 18) {
 			this->YVelocity += 6;
@@ -170,6 +170,30 @@ void GameObject::step()
 		}
 		if (y > 36) {
 			this->setY(36);
+		}
+	}
+
+	if (team == 2 && animation.getName() == "mushroom" && XVelocity == 0) {
+		if (objects.at(1)->getX() + objects.at(1)->getWidth() > x) 
+		{
+			setVX(-5);
+		}
+		else
+		{
+			setVX(5);
+		}
+	}
+	
+	//enemy stuff
+	if (team == 3)
+	{
+		if (animation.getName() == "goomba" && XVelocity == 0)
+		{
+			setVX(-5);
+		}
+		if (x + 800 < objects.at(1)->getX())
+		{
+			setToDie(true);
 		}
 	}
 }
@@ -293,6 +317,10 @@ void GameObject::collisionSide(GameObject* o) {
 			//top collision
 			collideTop(o);
 			//cout << "top" << endl;
+			if (team == 1 && o->getTeam() == 3)
+			{
+				setToDie(true);
+			}
 		}
 		else if (bottomCollision == max)
 		{
@@ -311,6 +339,10 @@ void GameObject::collisionSide(GameObject* o) {
 			else {
 				collideBottom(o);
 				//cout << "bot" << endl;
+				if (team == 1 && o->getTeam() == 3)
+				{
+					o->setToDie(true);
+				}
 			}
 		}
 		if (rightCollision == max)
@@ -318,12 +350,20 @@ void GameObject::collisionSide(GameObject* o) {
 			//right collision
 			collideRight(o);
 			//cout << "rig" << endl;
+			if (team == 1 && o->getTeam() == 3)
+			{
+				setToDie(true);
+			}
 		}
 		else if (leftCollision == max)
 		{
 			//left collision
 			collideLeft(o);
 			//cout << "lef" << endl;
+			if (team == 1 && o->getTeam() == 3)
+			{
+				setToDie(true);
+			}
 		}
 	}
 }
@@ -369,8 +409,7 @@ void GameObject::textureRect(int x, int y, int w, int h)
 //left collision logic
 void GameObject::collideLeft(GameObject* o)
 {
-	int distance = animation.getSprite()->getGlobalBounds().left - (o->getAnimation()->getSprite()->getGlobalBounds().left
-		+ o->getAnimation()->getSprite()->getGlobalBounds().width);
+	int distance = animation.getSprite()->getGlobalBounds().left - (o->getX() + o->getAnimation()->getSprite()->getGlobalBounds().width);
 	this->setX(this->getX() - distance);
 	this->setVX(0);
 }
@@ -480,15 +519,6 @@ int GameObject::getCoins()
 	return coins;
 }
 
-void GameObject::setVectorPosition(int pos)
-{
-	vectorPosition = pos;
-}
-
-int GameObject::getVectorPosition()
-{
-	return vectorPosition;
-}
 
 int GameObject::getFrameWhenCreated()
 {

@@ -38,29 +38,30 @@ void StateManager::handleEvents()
 	setupAnimations();
 
 	myCoinAnimation = new Animation("coin", true);
-	myShroom = new Animation("flower", true, 1);
+	myShroom = new Animation("mushroom", true, 1);
 
 	Animation mapAnimation("maps\\1", true);
 	GameObject* map = new GameObject(0, 0, mapAnimation, frame);
 	map->getAnimation()->getSprite()->setTextureRect(sf::IntRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
 	map->setTeam(-1);
-	map->setVectorPosition(objects.size());
 	objects.push_back(map);
 
 	//loadMap();
 
 	player = new GameObject(200, 0, *animations[5],frame);
 	player->setTeam(1);
-	player->setVectorPosition(objects.size());
 	int animation = 1;
 	objects.push_back(player);
 
-	Block* block = new Block(512, -28, *animations[0],frame);
-	block->setVectorPosition(objects.size());
+	Block* block = new Block(512, -28, *animations[2],frame);
 	block->setTeam(0);
 	block->setCoins(0);
 	block->setPowerUp(2);
 	objects.push_back(block);
+
+	GameObject* monster = new GameObject(400, -400, *animations[7], frame);
+	monster->setTeam(3);//enemy
+	objects.push_back(monster);
 	
 
 	
@@ -192,7 +193,7 @@ void StateManager::stepAll(int frame)
 		//step object
 		if (objects.at(i) != NULL)
 		{
-			 objects.at(i)->step();
+			 objects.at(i)->step(objects);
 
 			 //TODO: Change the frame % to dynamic number
 			//move animation
@@ -213,7 +214,6 @@ void StateManager::stepAll(int frame)
 			{
 				if (objects.at(i)->getCoins() > 0) 
 				{
-					objects.at(coin->getVectorPosition())->setToDie(true);
 					objects.at(i)->setCoins(objects.at(i)->getCoins() - 1);
 				}
 				objects.at(i)->setMoving(false);
@@ -229,7 +229,6 @@ void StateManager::stepAll(int frame)
 					coin->setY(coin->getY() - 32);//move above the block
 					coin->setX(coin->getX() + 6);//offset block size
 					coin->setVY(0);//block has velocity
-					coin->setVectorPosition(objects.size());//where to find later
 					objects.push_back(coin);
 				}
 				else
@@ -241,7 +240,6 @@ void StateManager::stepAll(int frame)
 					powerup = new GameObject(*objects.at(i), *myShroom, frame);
 					powerup->setY(powerup->getY() - 32);
 					powerup->setTeam(2);
-					powerup->setVectorPosition(objects.size());
 					objects.at(i)->setPowerUp(0);
 					objects.push_back(powerup);
 					objects.at(i)->setAnimation(*animations[1]);
@@ -251,7 +249,6 @@ void StateManager::stepAll(int frame)
 					powerup = new GameObject(*objects.at(i), *myShroom, frame);
 					powerup->setY(powerup->getY() - 32);
 					powerup->setTeam(2);
-					powerup->setVectorPosition(objects.size());
 					objects.at(i)->setPowerUp(0);
 					objects.push_back(powerup);
 					objects.at(i)->setAnimation(*animations[1]);
@@ -296,7 +293,7 @@ void StateManager::stepAll(int frame)
 
 		if (o->toDie())
 		{
-			objects.erase(objects.begin() + o->getVectorPosition());
+			objects.erase(objects.begin() + i);
 			delete o;
 		}
 
@@ -305,12 +302,12 @@ void StateManager::stepAll(int frame)
 
 void StateManager::setupAnimations()
 {
-	animations[0] = new Animation("question-block", true);
-	animations[1] = new Animation("used-block", true);
-
-	animations[5] = new Animation("mario-small", true, 3);
-	animations[6] = new Animation("mario", true, 3);
-
+	animations[0] = new Animation("question-block");
+	animations[1] = new Animation("used-block");
+	animations[2] = new Animation("brick");
+	animations[5] = new Animation("mario-small", 3);
+	animations[6] = new Animation("mario", 3);
+	animations[7] = new Animation("goomba");
 }
 
 
