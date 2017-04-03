@@ -38,12 +38,14 @@ public:
 	void setCoins(int);
 	void addCoin();
 	int getCoins();
+	void setVectorPosition(int pos);
+	int getVectorPosition();
 	int getFrameWhenCreated();
 	void setPowerUp(int powerup);
 	int getPowerUp();
 
 	//move things one 'step' or frame
-	void step(std::vector<GameObject*>);
+	void step();
 	//called when State Manager finds a collision between objects
 	void collision(GameObject*,Animation*[]);
 	//move to the next animation given an animation
@@ -71,7 +73,7 @@ private:
 	double width, height;//size
 	double XVelocity, YVelocity;
 
-	int team, coins = 0, frameWhenCreated, powerup = 0;
+	int team, coins = 0, vectorPosition, frameWhenCreated, powerup = 0;
 
 	bool dead = false;//will remove in state manager if true
 	bool grounded = false;

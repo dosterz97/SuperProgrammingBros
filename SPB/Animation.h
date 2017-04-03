@@ -5,7 +5,7 @@
 class Animation
 {
 public:
-	Animation(std::string, bool isStill = true,int frames = 1);
+	Animation(std::string, bool,int frames = 1);
 	Animation();
 	~Animation();
 	
