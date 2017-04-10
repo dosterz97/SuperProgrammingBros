@@ -49,7 +49,7 @@ void StateManager::handleEvents()
 
 	loadMap();
 
-	player = new GameObject(5000, 0, *animations[8], frame);
+	player = new GameObject(3000, 0, *animations[8], frame);
 	player->setTeam(1);
 	int animation = 1;
 	objects.push_back(player);
@@ -323,6 +323,8 @@ void StateManager::setupAnimations()
 	animations[9] = new Animation("goomba");
 	animations[10] = new Animation("koopa");
 	animations[11] = new Animation("koopa-shell" , 2);
+	animations[12] = new Animation("ground-block");
+	animations[13] = new Animation("stair-block");
 }
 
 
