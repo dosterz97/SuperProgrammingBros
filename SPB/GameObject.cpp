@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <iostream>
 #include "Block.h"
+#include "Koopa.h"
 
 using namespace std;
 
@@ -12,7 +13,7 @@ GameObject::GameObject() {
 
 //Put an animation where some object is
 //Preconditon: GameObject, Animation
-GameObject::GameObject(GameObject object, Animation animation,int frame)
+GameObject::GameObject(GameObject object, Animation animation, int frame)
 {
 	this->setAnimation(animation);
 	this->setX(object.getX());
@@ -28,7 +29,7 @@ GameObject::GameObject(GameObject object, Animation animation,int frame)
 
 //Create a new GameObject
 //Precondition: x position, y position, object animation
-GameObject::GameObject(double x, double y, Animation animation, int frame) 
+GameObject::GameObject(double x, double y, Animation animation, int frame)
 {
 	this->animation = animation;
 	this->setX(x);
@@ -50,7 +51,7 @@ GameObject::~GameObject()
 
 //set x position
 //precondition: double x
-void GameObject::setX(double x) 
+void GameObject::setX(double x)
 {
 	animation.getSprite()->setPosition(x, animation.getSprite()->getGlobalBounds().top);
 	this->x = x;
@@ -59,7 +60,7 @@ void GameObject::setX(double x)
 
 //get y position
 //postcondition: double y 
-double GameObject::getX() 
+double GameObject::getX()
 {
 	return x;
 }
@@ -67,7 +68,7 @@ double GameObject::getX()
 
 //set y position
 //precondition: double y
-void GameObject::setY(double y) 
+void GameObject::setY(double y)
 {
 	animation.getSprite()->setPosition(animation.getSprite()->getGlobalBounds().left, y);
 	this->y = y;
@@ -76,7 +77,7 @@ void GameObject::setY(double y)
 
 //get y position
 //postcondition: double y 
-double GameObject::getY() 
+double GameObject::getY()
 {
 	return y;
 }
@@ -84,7 +85,7 @@ double GameObject::getY()
 
 //set x velocity
 //precondition: double x
-void GameObject::setVX(double XVelocity) 
+void GameObject::setVX(double XVelocity)
 {
 	this->XVelocity = XVelocity;
 }
@@ -92,7 +93,7 @@ void GameObject::setVX(double XVelocity)
 
 //get x velocity
 //postcondition: double x 
-double GameObject::getVX() 
+double GameObject::getVX()
 {
 	return XVelocity;
 }
@@ -100,7 +101,7 @@ double GameObject::getVX()
 
 //set x velocity
 //precondition: double x
-void GameObject::setVY(double YVelocity) 
+void GameObject::setVY(double YVelocity)
 {
 	this->YVelocity = YVelocity;
 }
@@ -108,7 +109,7 @@ void GameObject::setVY(double YVelocity)
 
 //get x velocity
 //postcondition: double x 
-double GameObject::getVY() 
+double GameObject::getVY()
 {
 	return YVelocity;
 }
@@ -116,15 +117,16 @@ double GameObject::getVY()
 
 //set animation
 //precondition: double x
-void GameObject::setAnimation(Animation animation) 
+void GameObject::setAnimation(Animation animation)
 {
 	this->animation = animation;
+	animation.getSprite()->setPosition(sf::Vector2f(x, y));
 }
 
 
 //get animation
 //postcondition: Animation
-Animation* GameObject::getAnimation() 
+Animation* GameObject::getAnimation()
 {
 	return &animation;
 }
@@ -132,7 +134,7 @@ Animation* GameObject::getAnimation()
 
 //set the objects to die
 //precondition: bool
-void GameObject::setToDie(bool dead) 
+void GameObject::setToDie(bool dead)
 {
 	this->dead = dead;
 }
@@ -140,16 +142,16 @@ void GameObject::setToDie(bool dead)
 
 //get whethere the object is dead
 //postcondition: bool
-bool GameObject::toDie() 
+bool GameObject::toDie()
 {
 	return dead;
 }
 
 
 //do on frame of logic for the object
-void GameObject::step()
+void GameObject::step(vector<GameObject*>* objects)
 {
-	if (this-team != 0 && team != -1) {
+	if (team != 0 && team != -1) {
 		//apply gravity  
 		if ((team != 0 && team != -1) && this->YVelocity <= 18) {
 			this->YVelocity += 6;
@@ -159,17 +161,43 @@ void GameObject::step()
 			this->YVelocity = 0;
 		}
 
-		//apply velocity
+		//apply x velocity
 		this->setX(x + XVelocity);
 		//terminal velocity
-		if (YVelocity > 18) {
+		if (YVelocity > 18) {	
 			YVelocity = 18;
 		}
-		if (y < 36 || YVelocity < 0) {
-			this->setY(y + YVelocity);
+		//apply y velocity
+		this->setY(y + YVelocity);
+		animation.getSprite()->setPosition(sf::Vector2f(x, y));
+	}
+
+
+	//all the AI
+	if (team == 3)
+	{
+		if (animation.getName() == "goomba" && XVelocity == 0)
+		{
+			if (objects->at(1)->getX() <= x)
+			{
+				this->setVX(-5);
+			}
+			else
+			{
+				this->setVX(5);
+			}
 		}
-		if (y > 36) {
-			this->setY(36);
+
+		if (animation.getName() == "koopa" && XVelocity == 0)
+		{
+			if (objects->at(1)->getX() <= x)
+			{
+				this->setVX(-5);
+			}
+			else
+			{
+				this->setVX(5);
+			}
 		}
 	}
 }
@@ -177,7 +205,7 @@ void GameObject::step()
 
 //get the objects team
 //postcondition: int
-int GameObject::getTeam() 
+int GameObject::getTeam()
 {
 	return team;
 }
@@ -187,7 +215,7 @@ int GameObject::getTeam()
 //0 interacts with nothing 1 is neutral 
 //2 is player 3 is an enemy
 //Precondition: int
-void GameObject::setTeam(int newTeam) 
+void GameObject::setTeam(int newTeam)
 {
 	this->team = newTeam;
 }
@@ -195,7 +223,7 @@ void GameObject::setTeam(int newTeam)
 
 //move to the next animation based upon what animation was given
 //precondition: Animation
-void GameObject::nextAnimation() 
+void GameObject::nextAnimation()
 {
 	if (animation.getFrames() == animation.getCurrentFrame()) {
 		//reset counter to 1
@@ -209,7 +237,7 @@ void GameObject::nextAnimation()
 
 //Set the height of the object not the sprite
 //precondition: double
-void GameObject::setHeight(double height) 
+void GameObject::setHeight(double height)
 {
 	this->height = height;
 }
@@ -217,7 +245,7 @@ void GameObject::setHeight(double height)
 
 //get the height of the object
 //post condition: double
-double GameObject::getHeight() 
+double GameObject::getHeight()
 {
 	return height;
 }
@@ -225,7 +253,7 @@ double GameObject::getHeight()
 
 //set the width of the object not the sprite
 //precondition: double
-void GameObject::setWidth(double width) 
+void GameObject::setWidth(double width)
 {
 	this->width = width;
 }
@@ -233,7 +261,7 @@ void GameObject::setWidth(double width)
 
 //get the width of the object
 //post condition: double
-double GameObject::getWidth() 
+double GameObject::getWidth()
 {
 	return width;
 }
@@ -243,7 +271,7 @@ double GameObject::getWidth()
 void GameObject::collision(GameObject* other, Animation* animations[])
 {
 	switch (team) {
-	case -1:	
+	case -1:
 		break;
 	case 0:
 		collisionSide(other);
@@ -251,9 +279,11 @@ void GameObject::collision(GameObject* other, Animation* animations[])
 	case 1:
 		collisionSide(other);
 		break;
-	case 2: 
+	case 2:
 		collisionSide(other);
 		powerupCollision(other, animations);
+	case 3:
+		collisionSide(other);
 		break;
 	}
 }
@@ -262,7 +292,8 @@ void GameObject::collision(GameObject* other, Animation* animations[])
 //returns a number based on which collision is the most prominent
 //If there is a collision, the function calls the collision side function
 //Postcondition: 0-Top 1-Right 2-Bottom 3-Left
-void GameObject::collisionSide(GameObject* o) {
+void GameObject::collisionSide(GameObject* o) 
+{
 	if (o->getTeam() != 2)//dont worry about the other object if a powerup
 	{
 		sf::FloatRect a = animation.getSprite()->getGlobalBounds();
@@ -272,11 +303,6 @@ void GameObject::collisionSide(GameObject* o) {
 		double bottomCollision = oBottom - a.top, topCollision = thisBottom - b.top, leftCollision = thisRight - b.left, rightCollision = oRight - a.left;
 
 		double max = bottomCollision;
-
-		/*cout << "bottom collision: " << bottomCollision << endl;
-		cout << "top collision: " << topCollision << endl;
-		cout << "left collision: " << leftCollision << endl;
-		cout << "right collision: " << rightCollision << endl;*/
 
 		//find the maximum infraction into the oppossing object
 		if (topCollision > max) {
@@ -288,11 +314,11 @@ void GameObject::collisionSide(GameObject* o) {
 		if (rightCollision > max) {
 			max = rightCollision;
 		}
-		if (topCollision == max)
+		if (topCollision == max && team != 0)
 		{
 			//top collision
 			collideTop(o);
-			//cout << "top" << endl;
+			//cout << this->getAnimation()->getName() << "top" << endl;
 		}
 		else if (bottomCollision == max)
 		{
@@ -310,28 +336,27 @@ void GameObject::collisionSide(GameObject* o) {
 			}
 			else {
 				collideBottom(o);
-				//cout << "bot" << endl;
+				//cout << this->getAnimation()->getName() << "bot" << endl;
 			}
 		}
-		if (rightCollision == max)
+		if (rightCollision == max && team != 0)
 		{
 			//right collision
 			collideRight(o);
-			//cout << "rig" << endl;
+			//cout << this->getAnimation()->getName() << "rig" << endl;
 		}
-		else if (leftCollision == max)
+		else if (leftCollision == max && team != 0)
 		{
 			//left collision
 			collideLeft(o);
-			//cout << "lef" << endl;
+			//cout << this->getAnimation()->getName() << "lef" << endl;
 		}
 	}
 }
 
 void GameObject::textureRect(int x, int y, int w, int h)
 {
-	
-	if (h == -1) 
+	if (h == -1)
 	{
 		h = animation.getTexture()->getSize().y;
 	}
@@ -339,30 +364,18 @@ void GameObject::textureRect(int x, int y, int w, int h)
 	{
 		w = animation.getTexture()->getSize().x;
 	}
-	
-	if (x < 0) 
+	if (x < 0)
 	{
 		x = 0;
 	}
-	if (y < 0) 
+	if (y < 0)
 	{
 		y = 0;
 	}
-	//cout << animation.getTexture()->getSize().x << ", " << animation.getTexture()->getSize().y << endl;
-	/*
-	if (x + w > animation.getTexture()->getSize().x) 
-	{
-		w = animation.getTexture()->getSize().x - x;
-	}
-	if (y + h > animation.getTexture()->getSize().y) 
-	{
-		w = animation.getTexture()->getSize().y - h;
-	}
-	*/
 
 	animation.getSprite()->setTextureRect(sf::IntRect(x, y, w, h));
-	this->width = 2*w;
-	this->height = 2*h;
+	this->width = 2 * w;
+	this->height = 2 * h;
 }
 
 
@@ -373,6 +386,13 @@ void GameObject::collideLeft(GameObject* o)
 		+ o->getAnimation()->getSprite()->getGlobalBounds().width);
 	this->setX(this->getX() - distance);
 	this->setVX(0);
+
+	if (team == 1 && o->getTeam() == 3)
+	{
+		cout << "hey hey" << endl;
+		dead = true;
+		o->setToDie(true);
+	}
 }
 
 
@@ -383,6 +403,12 @@ void GameObject::collideRight(GameObject* o)
 		- o->getAnimation()->getSprite()->getGlobalBounds().left;
 	this->setX(this->getX() - distance);
 	this->setVX(0);
+
+	if (team == 1 && o->getTeam() == 3)
+	{
+		dead = true;
+		o->setToDie(true);
+	}
 }
 
 
@@ -393,6 +419,12 @@ void GameObject::collideTop(GameObject* o)
 		- animation.getSprite()->getGlobalBounds().top;
 	this->setY(this->getY() + distance);
 	this->setVY(0);
+
+	if (team == 1 && o->getTeam() == 3)
+	{
+		dead = true;
+		o->setToDie(true);
+	}
 }
 
 
@@ -404,6 +436,27 @@ void GameObject::collideBottom(GameObject* o)
 	this->grounded = true;
 	this->setY(this->getY() - distance);
 	this->setVY(0);
+
+	if (team == 1 && o->getTeam() == 3)
+	{
+		string name = o->getAnimation()-> getName();
+		this->setVY(-12);
+		if (name == "koopa") {
+			cout << "koopa" << endl;
+			try {
+				Koopa* c = dynamic_cast<Koopa*>(o);
+				GameObject* temp = this;
+				c->collideTop(temp);
+			}
+			catch (int n) {
+				cout << "failed to cast from GameObject to Koopa" << endl;
+			}
+		}
+		else {
+			o->setToDie(true);
+		}
+			
+	}
 }
 
 void GameObject::powerupCollision(GameObject* other, Animation* animations[])
@@ -411,7 +464,7 @@ void GameObject::powerupCollision(GameObject* other, Animation* animations[])
 	if (other->getTeam() == 1)
 	{
 		this->setToDie(true);
-		
+
 		if (other->getAnimation()->getName() == "mario-small")
 		{
 			if (this->animation.getName() == "mushroom" || this->animation.getName() == "flower")
@@ -421,7 +474,7 @@ void GameObject::powerupCollision(GameObject* other, Animation* animations[])
 				other->setHeight(other->getAnimation()->getSprite()->getGlobalBounds().height);
 			}
 		}
-		
+
 		//TODO: other powerup scenarios
 	}
 }
@@ -435,7 +488,7 @@ bool GameObject::isAccessible()
 
 //get the grounded variable
 //postcondition: bool
-bool GameObject::isGrounded() 
+bool GameObject::isGrounded()
 {
 	return this->grounded;
 }
@@ -478,16 +531,6 @@ void GameObject::addCoin()
 int GameObject::getCoins()
 {
 	return coins;
-}
-
-void GameObject::setVectorPosition(int pos)
-{
-	vectorPosition = pos;
-}
-
-int GameObject::getVectorPosition()
-{
-	return vectorPosition;
 }
 
 int GameObject::getFrameWhenCreated()

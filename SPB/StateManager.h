@@ -13,15 +13,15 @@ public:
 	~StateManager();
 
 	void handleEvents();
-	void stepAll(int);
+	void stepAll(int, vector<GameObject*>*);
 	void setupAnimations();
 	void loadMap(string mapToLoad = "1\\1");
 	void draw();
-	void createObject(int, int, int, int);
+	void createObject(int, int, int, int,int,int);
 private:
-	int world=1;
-	int level=1;
-	
+	int world = 1;
+	int level = 1;
+
 	sf::RenderWindow* window;
 	GameObject* player;
 	Animation createObjectTempAnimation;

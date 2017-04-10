@@ -6,8 +6,8 @@ class GameObject
 {
 public:
 	GameObject();
-	GameObject(GameObject, Animation,int);//Place a new animation where an object was
-	GameObject(double, double, Animation,int);
+	GameObject(GameObject, Animation, int);//Place a new animation where an object was
+	GameObject(double, double, Animation, int);
 	~GameObject();
 
 	//gets and sets for instance variables
@@ -21,7 +21,7 @@ public:
 	double getVY();
 	void setAnimation(Animation animation);
 	Animation* getAnimation();
-	void setToDie(bool);
+	void setToDie(bool dead = true);
 	bool toDie();
 	void setTeam(int);
 	int getTeam();
@@ -38,16 +38,14 @@ public:
 	void setCoins(int);
 	void addCoin();
 	int getCoins();
-	void setVectorPosition(int pos);
-	int getVectorPosition();
 	int getFrameWhenCreated();
 	void setPowerUp(int powerup);
 	int getPowerUp();
 
 	//move things one 'step' or frame
-	void step();
+	void step(std::vector<GameObject*>*);
 	//called when State Manager finds a collision between objects
-	void collision(GameObject*,Animation*[]);
+	void collision(GameObject*, Animation*[]);
 	//move to the next animation given an animation
 	void nextAnimation();
 	//determines which side the collision occured on
@@ -55,7 +53,7 @@ public:
 
 	//set texture rect
 	void textureRect(int x = 0, int y = 0, int w = -1, int h = -1);
-	
+
 	//executes the specific logic for the side that has been determined by collisionSide
 	//the reason I have these functions is so that they can be overriden
 	//and different functionality can be made for different classes
@@ -65,15 +63,15 @@ public:
 	void collideBottom(GameObject*);
 
 	//This is called by the powerup
-	void powerupCollision(GameObject*,Animation*[]);
+	void powerupCollision(GameObject*, Animation*[]);
 	virtual bool isAccessible();
 
-private: 
-	double x,y;//cordinate
+private:
+	double x, y;//cordinate
 	double width, height;//size
 	double XVelocity, YVelocity;
 
-	int team, coins = 0, vectorPosition, frameWhenCreated, powerup = 0;
+	int team, coins = 0, frameWhenCreated, powerup = 0;
 
 	bool dead = false;//will remove in state manager if true
 	bool grounded = false;

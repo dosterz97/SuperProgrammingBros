@@ -51,6 +51,7 @@ void Animation::loadSprite(std::string path, int x, int y, int w, int h)
 		}
 	}
 	oldpath = path;
+	texture.setRepeated(true);
 	sprite.setTexture(texture);
 	return;
 }
